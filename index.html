@@ -64,7 +64,9 @@ function stash(){S.cs[S.cls]={};for(const f of PF)S.cs[S.cls][f]=S[f]}
 function loadCls(){const d=S.cs[S.cls]||{};S.cb=d.cb||0;S.gold=d.gold||0;S.sh=d.sh||0;S.psh=d.psh||0;S.desc=d.desc||0;S.ab=d.ab||0;S.pu=JSON.parse(JSON.stringify(d.pu||{}));S.sf=d.sf||1}
 S.dex=S.dex||{e:{},m:{},b:{},r:{},g:0};S.st=Object.assign({runs:0,wins:0,kills:0,bosses:0,gold:0,time:0,hit:0,killers:{},relics:{},cr:{},hist:[]},S.st||{});loadCls();
 const saveStr=()=>{stash();S.at=Date.now();return JSON.stringify({cls:S.cls,best:S.best,u:S.u,cs:S.cs,mute:S.mute,nomus:S.nomus,dex:S.dex,st:S.st,run:S.run||null,red:S.red||{},bkr:S.bkr||0,at:S.at})};
-const save=()=>{let str='';try{str=saveStr();localStorage.setItem('cc2',str)}catch(e){}cloudSoon()};
+// never let a stale copy of the game (another tab or window) overwrite a save that is further along; adopt it instead
+let FORCESAVE=0;
+const save=()=>{try{const old=localStorage.getItem('cc2');if(old&&!FORCESAVE){const o=JSON.parse(old);if(progOf(o)>progOf(S)+1){cloudApply(old);return}}localStorage.setItem('cc2',saveStr())}catch(e){}FORCESAVE=0;cloudSoon()};
 // ---- cloud save: a private copy on the player's Claude account, so progress survives cleared storage and follows them across devices ----
 let CLOUD=null,cloudT=0,cloudBusy=0,cloudDirty=0,CLOUDP=-1,CPEND=null,CLOUDOK=false;
 const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
@@ -75,7 +77,8 @@ const progOf=o=>{const t=(o&&o.st)||{};return (t.time||0)+(t.runs||0)*30+(t.kill
 function cloudApply(str){const c=JSON.parse(str);try{localStorage.setItem('cc2bak',saveStr())}catch(e){}for(const k of['cls','best','u','cs','mute','nomus','dex','st','run','red','bkr','at'])if(k in c)S[k]=c[k];loadCls();S.st=Object.assign({runs:0,wins:0,kills:0,bosses:0,gold:0,time:0,hit:0,killers:{},relics:{},cr:{},hist:[]},S.st||{});S.dex=S.dex||{e:{},m:{},b:{},r:{},g:0};try{localStorage.setItem('cc2',str)}catch(e){}CLOUDP=progOf(c);if(scr=='menu')menu()}
 function cloudSoon(){if(!CLOUD||CPEND)return;cloudDirty=1;clearTimeout(cloudT);cloudT=setTimeout(cloudPush,4000)}
 async function cloudPush(){if(!CLOUD||CPEND||cloudBusy||!cloudDirty)return;if(progOf(S)+1<CLOUDP)return;cloudBusy=1;cloudDirty=0;try{const str=saveStr();await CLOUD.set({cc2:str,at:S.at,prog:progOf(S)});CLOUDP=Math.max(CLOUDP,progOf(S));CLOUDOK=true}catch(e){if(e&&(e.code=='invalid_argument'||e.code=='revoked'||e.code=='not_granted'))CLOUD=null;else cloudDirty=1}cloudBusy=0}
-document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(cloudT);cloudPush()}});window.addEventListener('pagehide',()=>{try{localStorage.setItem('cc2',saveStr())}catch(e){}clearTimeout(cloudT);cloudPush()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(cloudT);cloudPush()}});window.addEventListener('pagehide',()=>{save();clearTimeout(cloudT);cloudPush()});
+window.addEventListener('storage',e=>{if(e.key!='cc2'||!e.newValue)return;try{const o=JSON.parse(e.newValue);if(progOf(o)>progOf(S)+1)cloudApply(e.newValue)}catch(x){}});
 (async()=>{try{if(!window.claude||!claude.use)return;const db=await claude.use('db'),user=await claude.use('user');if(!db||!user)return;const id=await user.id();if(!id)return;
  const ref=db.doc('data/users/'+id+'/save'),snap=await ref.get();CLOUD=ref;const d=snap.exists?snap.data():null;
  let cp=-1;if(d&&typeof d.cc2=='string'){try{cp=progOf(JSON.parse(d.cc2))}catch(e){}}CLOUDP=cp;const lp=progOf(S);
@@ -148,7 +151,7 @@ function bkLoad(){const el=$d('#bkin'),v=(el&&el.value||BK.pend||'').trim();BK.m
  if(!BK.arm){BK.arm=1;BK.pend=v;menu();return}
  BK.arm=0;BK.pend='';try{localStorage.setItem('cc2bak',saveStr())}catch(e){}
  for(const k of['cls','best','u','cs','mute','nomus','dex','st','run','red'])if(k in c)S[k]=c[k];loadCls();S.st=Object.assign({runs:0,wins:0,kills:0,bosses:0,gold:0,time:0,hit:0,killers:{},relics:{},cr:{},hist:[]},S.st||{});S.dex=S.dex||{e:{},m:{},b:{},r:{},g:0};
- CLOUDP=-1;CPEND=null;save();if(CLOUD){clearTimeout(cloudT);cloudPush()}BK.msg='Progress restored.';menu()}
+ CLOUDP=-1;CPEND=null;FORCESAVE=1;save();if(CLOUD){clearTimeout(cloudT);cloudPush()}BK.msg=`Progress restored: ${S.st.runs} runs, best floor ${S.best}.`;menu()}
 // ---------- the Index ----------
 const ICONURL={};const CI=()=>`<img class="ci" src="${iconURL('coin')}" alt="gold">`;function iconURL(shape){if(ICONURL[shape])return ICONURL[shape];if(typeof itemSpr=='function')return ICONURL[shape]=itemSpr(shape).toDataURL();const c=document.createElement('canvas');c.width=c.height=80;const x=c.getContext('2d');x.translate(40,40);x.scale(2.4,2.4);x.strokeStyle='#15110d';x.lineWidth=1.4;x.lineJoin='round';
 for(const[p,col]of IPATH[shape]){x.fillStyle=col;x.fill(p,'evenodd');x.stroke(p)}return ICONURL[shape]=c.toDataURL()}
