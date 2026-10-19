@@ -52,7 +52,7 @@ textarea{background:#0f0c0a;color:#e7d6b4;border:1px solid #3a2f25;border-radius
 <div id="game" hidden><canvas id="cv"></canvas><div id="ov" hidden></div></div></div>
 <script>
 const $d=s=>document.querySelector(s),cv=$d('#cv'),g=cv.getContext('2d'),W=360,H=520;cv.width=W;cv.height=H;
-const CH=236,MT=240,FL=504,HOME=272,DOWN=460,BASEHP=70,RESTOCK=4,CAP=4940;
+const CH=236,MT=240,FL=504,HOME=272,DOWN=460,BASEHP=70,RESTOCK=5,CAP=4940;
 let S={gold:0,cls:'warrior',best:0,u:{},sh:0,desc:0,ab:null,pu:{},sf:1};
 try{localStorage.removeItem('cc1')}catch(e){}
 try{Object.assign(S,JSON.parse(localStorage.getItem('cc2')||'{}'))}catch(e){}
