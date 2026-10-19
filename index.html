@@ -92,7 +92,7 @@ const U=c=>{const u=S.u[c]||(S.u[c]={sz:0,dmg:0,hp:0,sk:0});if(u.sz==null){const
 const P=k=>(S.pu&&S.pu[k])||0;
 const PU=[['pdm','@sword Soul Might','+25% damage',5,1.6,0],['php','@hrt Soul Vigor','+25% max HP',5,1.6,0],['pg','@pouch Soul Greed','+25% gold from coins',5,1.6,0],['phv','@shard Soul Harvest','+15% Soul Shards from runs and Descend',25,1.9,10],['pgr','@claw Deep Grip','+8% grip capacity (Mage: a wider pull · Rogue: barbed hook)',15,2,5],['pst','@door Head Start','Start runs 10 floors deeper (pick your floor above)',20,1.8,9],['plb','@up Limit Break','+2 max level for Damage and Health',25,1.7,10]];
 const LVCAP=()=>15+2*P('plb'),MAXLV=k=>k=='sz'?SZMAX:LVCAP();
-const pcost=(p,l)=>Math.ceil(p[3]*Math.pow(p[4],l)),SHM=()=>1+.15*P('phv'),shards=()=>Math.floor(1.5*Math.pow(Math.max(0,S.ab-40),1.5)*SHM()),runShards=L=>L>40?Math.max(1,Math.floor(.15*1.5*Math.pow(L-40,1.5)*SHM())):0,maxSF=()=>1+10*P('pst');
+const pcost=(p,l)=>Math.ceil(p[3]*Math.pow(p[4],l)),SHM=()=>1+.15*P('phv'),shards=()=>Math.floor(2.25*Math.pow(Math.max(0,S.ab-40),1.5)*SHM()),runShards=L=>L>40?Math.max(1,Math.floor(.6*Math.pow(L-40,1.5)*SHM())):0,maxSF=()=>1+10*P('pst');
 const fmt=n=>n<1e4?Math.round(n):n<1e6?(n/1e3).toFixed(1)+'k':n<1e9?(n/1e6).toFixed(1)+'M':n.toExponential(1);
 const TAG={warrior:'Heavy claw · one crushing blow per axe',rogue:'Claw and hook · three quick strikes per dagger',mage:'Magnet orb · two spells per orb'};
 let TAB='up',DTAB='items';
