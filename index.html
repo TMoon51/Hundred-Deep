@@ -87,7 +87,7 @@ window.addEventListener('storage',e=>{if(e.key!='cc2'||!e.newValue)return;try{co
 const CL={
 warrior:{n:'Warrior',e:'🪓',h:1,dm:2.5,d:'Heavy claw with a tight, deep grip. It digs into the pile until it is full, taking whatever is closest to its middle first. Every axe you grab lands one crushing blow. Its Cleave skill adds sweeping items that hit every enemy.',sk:[['Cleave','Adds Cleave stones to the machine: a sweeping blow that hits every enemy for 70% of your base damage. More Damage levels, more items.'],['Iron Skin','Take 25% less damage'],['Bloodlust','Heal 5% HP on kill'],['Rubble Toss','Grabbed rocks are no longer junk: each one hits your target for 25% damage.'],['Execute','Axes deal x2 damage to enemies below 30% HP.'],['Last Stand','Once per run, a hit that would kill you leaves you at 1 HP instead.'],['Rage','Taking damage fills your Rage bar. When it is full, every axe in your next attack hits ALL enemies.'],['Brace','The first boss or mini-boss SLAM each floor deals 75% less damage.'],['Ground Slam','When your claw slams into the pile, a shockwave hits every enemy for 30% damage.']]},
 rogue:{n:'Rogue',e:'🗡️',h:3,dm:.72,d:'A small claw and an iron hook. The claw grabs first, then the hook drops straight down and skewers the first 3 things its tip touches, however deep, rubble included. Then everything you grabbed attacks before the enemies strike. The Rogue hits lighter overall. Every dagger you grab lands 3 rapid strikes.',sk:[['Backstab','30% chance to crit for x2'],['Evasion','25% chance to dodge'],['Venom','Adds Venom vials to the machine. Each one poisons a random enemy for 120% of your base damage per stack, every round for 3 rounds, after your attacks and before the enemies strike. More Damage levels, more vials.'],['Pickpocket','Every crit heals 3% max HP.'],['Riposte','Every dodge counterattacks the attacker with one dagger strike.'],['Plague','When a poisoned enemy dies, its poison stacks jump to the next enemy, including reinforcements.'],['Mark','Tap an enemy in the fight to mark it. Your attacks focus it and it takes +25% damage.'],['Combo','Each turn the claw and the hook both get a dagger, Combo grows by 1 (max 5): +10% damage per stack. If either comes up without one, it resets.'],['Shadow Claw','Every 3rd turn, a shadow claw drops after the hook.']]},
-mage:{n:'Mage',e:'🔮',h:2,dm:1.4,d:'A floating arcane orb that works like a magnet. It sinks into the pile and pulls in everything inside its ring, nearest first, and nothing slips. Every orb you grab casts 2 spells.',sk:[['Deep Freeze','Each spell has a 20% chance to freeze its target, so it loses its next attack. Bosses and the god resist.'],['Mana Shield','Take 25% less damage'],['Siphon','Heal 2.5% max HP per spell'],['Chain Lightning','Each spell has a 25% chance to arc to a second enemy for full damage.'],['Shatter','Frozen enemies take +50% damage.'],['Gravity Well','The orb pulls in Ember and Heartstone gems from well beyond its normal reach, and grabs them first.'],['Mana','Every spell adds 1 Mana. At 20, a Meteor hits every enemy for 300% damage.'],['Elemental Orbs','Adds fire orbs (hit every enemy for 120%) and ice orbs (a spell that always freezes) to the machine.'],['Recast','Once per turn, after your grab the orb drops again with a smaller pull.']]}};
+mage:{n:'Mage',e:'🔮',h:2,dm:1.4,d:'A floating arcane orb that works like a magnet. It sinks into the pile and pulls in everything inside its ring, nearest first, and nothing slips. Every orb you grab casts 2 spells.',sk:[['Deep Freeze','Each spell has a 20% chance to freeze its target, so it loses its next attack. Bosses and the god resist.'],['Mana Shield','Take 25% less damage'],['Siphon','Heal 2.5% max HP per spell'],['Chain Lightning','Adds Storm Spikes to the machine. Each one casts a bolt that hits your target for full damage, then arcs to every other enemy, losing 20% with each jump. More Damage levels, more spikes.'],['Shatter','Frozen enemies take +50% damage.'],['Gravity Well','The orb pulls in Ember and Heartstone gems from well beyond its normal reach, and grabs them first.'],['Mana','Every spell adds 1 Mana. At 20, a Meteor hits every enemy for 300% damage.'],['Elemental Orbs','Adds fire orbs (hit every enemy for 120%) and ice orbs (a spell that always freezes) to the machine.'],['Recast','Once per turn, after your grab the orb drops again with a smaller pull.']]}};
 const U=c=>{const u=S.u[c]||(S.u[c]={sz:0,dmg:0,hp:0,sk:0});if(u.sz==null){const o=u.spd||0,n=Math.min(SZMAX,o);for(let l=n;l<o;l++)S.gold+=cost(l);u.sz=n;delete u.spd}return u},SZMAX=10,CS=()=>1+.02*Math.min(SZMAX,U(S.cls).sz),cost=(l,gr=1.5)=>Math.ceil(15*Math.pow(gr,l)),GRO=k=>k=='sz'?1.5:1.6,SC=[60,250,900,3000,10000,30000,75000,200000,500000];
 const P=k=>(S.pu&&S.pu[k])||0;
 const PU=[['pdm','@sword Soul Might','+25% damage',5,1.6,0],['php','@hrt Soul Vigor','+25% max HP',5,1.6,0],['pg','@pouch Soul Greed','+25% gold from coins',5,1.6,0],['phv','@shard Soul Harvest','+15% Soul Shards from runs and Descend',25,1.9,10],['pgr','@claw Deep Grip','+8% grip capacity (Mage: a wider pull · Rogue: barbed hook)',15,2,5],['pst','@door Head Start','Start runs 10 floors deeper (pick your floor above)',20,1.8,9],['plb','@up Limit Break','+2 max level for Damage and Health',25,1.7,10]];
@@ -158,7 +158,7 @@ for(const[p,col]of IPATH[shape]){x.fillStyle=col;x.fill(p,'evenodd');x.stroke(p)
 const DEXI=[['axe','Axe','Warrior weapon. Each axe you grab lands one crushing blow on your target.'],['dagger','Dagger','Rogue weapon. Each dagger lands 3 quick strikes.'],['orbw','Arcane Orb','Mage weapon. Each orb casts 2 spells.'],
 ['coin','Coin','Gold for upgrades. Every kill drops one coin.'],['pouch','Coin Pouch','Mini-bosses and bosses drop one heavy pouch of gold. Takes more grip space.'],['chest','Chest','Dropped by bosses and mini-bosses. A big haul of gold.'],
 ['flame','Ember','+5% damage for the rest of the run.'],['heart','Heartstone','Heals 25% of your max HP.'],['cleave','Cleave','Warrior skill item. Sweeps every enemy for 70% damage.'],['vial','Venom','Rogue skill item. Poisons a random enemy for 120% damage per stack each round for 3 rounds.'],
-['comet','Fire Orb','Mage skill item. Hits every enemy for 120% damage.'],['star','Ice Orb','Mage skill item. A spell that always freezes its target. Bosses resist.'],['rock','Rock','Junk that takes up grip space, unless Rubble Toss or Volatile Rocks put it to work.'],['bone','Bone','Junk thrown in by Rotters. Counts as a rock for Rubble Toss, but never explodes.'],['magma','Magma Rock','With the Volatile Rocks relic, every rock in the machine smoulders. Each one you grab explodes for 20% damage to every enemy.']];
+['comet','Fire Orb','Mage skill item. Hits every enemy for 120% damage.'],['star','Ice Orb','Mage skill item. A spell that always freezes its target. Bosses resist.'],['storm','Storm Spike','Mage skill item (Chain Lightning). A bolt hits your target for full damage, then arcs to every other enemy, 20% weaker with each jump.'],['rock','Rock','Junk that takes up grip space, unless Rubble Toss or Volatile Rocks put it to work.'],['bone','Bone','Junk thrown in by Rotters. Counts as a rock for Rubble Toss, but never explodes.'],['magma','Magma Rock','With the Volatile Rocks relic, every rock in the machine smoulders. Each one you grab explodes for 20% damage to every enemy.']];
 const DEXHOW=['<b>Your turn</b> Drag to aim the claw, release to drop. It digs into the pile and grabs whatever is in its grip, closest to the middle first, until it is full. Items at the edge can slip.',
 '<b>Combat</b> Grabbed weapons attack the marked enemy (@tri), then poison ticks, then every enemy strikes back. @warn means a boss is winding up a slam.',
 '<b>Floors</b> More enemies every 10 floors. A mini-boss every 5th floor, a boss every 10th, and the god on floor 100.',
@@ -306,7 +306,7 @@ const spdm=()=>R.spd*1.35*(S.cls=='rogue'?1.3:1);
 function stats(){const c=S.cls,u=U(c),k=u.sk,b=CL[c];let dm=10*b.dm*Math.pow(1.15,u.dmg)*R.atk,crit=0,red=0,dod=0,kh=0,hh=0,fr=0,rb=0,ex=0,ls=0,pp=0,rip=0,pl=0,ch=0,sh=0,gw=0,rg=0,gs=0,br=0,mk=0,cb=0,sw=0,mn=0,el=0,rc=0;
 if(c=='warrior'){if(k>1)red=.25;if(k>2)kh=.05;if(k>3)rb=.25;if(k>4)ex=1;if(k>5)ls=1;if(k>6)rg=1;if(k>7)br=1;if(k>8)gs=1}
 if(c=='rogue'){if(k>0)crit=.3;if(k>1)dod=.25;if(k>3)pp=.03;if(k>4)rip=1;if(k>5)pl=1;if(k>6)mk=1;if(k>7){cb=1;dm*=1+.1*(R.combo||0)}if(k>8)sw=1}
-if(c=='mage'){if(k>0)fr=.2;if(k>1)red=.25;if(k>2)hh=.025;if(k>3)ch=.25;if(k>4)sh=.5;if(k>5)gw=1;if(k>6)mn=1;if(k>7)el=1;if(k>8)rc=1}
+if(c=='mage'){if(k>0)fr=.2;if(k>1)red=.25;if(k>2)hh=.025;if(k>4)sh=.5;if(k>5)gw=1;if(k>6)mn=1;if(k>7)el=1;if(k>8)rc=1}
 dm*=1+.25*P('pdm');if(hasR('bul'))red=1-(1-red)*.9;if(hasR('luk'))crit+=.1;if(hasR('frz'))fr+=.07;
 return{dm,crit,red,dod,kh,hh,fr,rb,ex,ls,pp,rip,pl,ch,sh,gw,rg,gs,br,mk,cb,sw,mn,el,rc,max:100*Math.pow(1.15,u.hp)*(1+.25*P('php'))*(hasR('hrt')?1.2:1)}}
 const RUNF=['L','hp','rel','atk','rage','mana','combo','ls','gain','kills','bk','time','turns','tn','maxHit','seen','rf','got'];
@@ -378,6 +378,7 @@ const BED=18;function bed(){let n=BED-K.items.filter(o=>o.k=='r'&&!o.h).length;w
 function refill(){const e=CL[S.cls].e;bed();for(let i=0;i<10;i++)add('a',e,14,0);for(let i=0;i<4;i++)add('r','🪨',13,0);
 const u=U(S.cls);if(S.cls=='warrior'&&u.sk>0){const n=Math.min(8,1+Math.floor(u.dmg/3));for(let i=0;i<n;i++)add('z','🌀',15,0)}
 if(S.cls=='rogue'&&u.sk>2){const n=Math.min(6,2+Math.floor(u.dmg/4));for(let i=0;i<n;i++)add('v','🧪',15,0)}
+if(S.cls=='mage'&&u.sk>3){const n=Math.min(6,2+Math.floor(u.dmg/4));for(let i=0;i<n;i++)add('ls','⚡',15,0)}
 if(S.cls=='mage'&&u.sk>7){for(let i=0;i<2;i++)add('fo','☄️',15,0);for(let i=0;i<2;i++)add('io','❄️',15,0)}
 if(hasR('gem'))for(let i=0;i<1;i++){const q=[['f','🔥'],['h','💚']][Math.random()*2|0];add(q[0],q[1],15,0)}
 sfx('restock');K.jolt=.22;ft(W/2,HOME+92,'Machine restocked','#c9b896',13,1.4)}
@@ -431,7 +432,7 @@ if(R.state=='dying'){K.vy+=900*dt;K.y=Math.min(DOWN,K.y+K.vy*dt);if(Math.random(
 else if(Math.random()<dt*14)burst(Math.random()*W,60+Math.random()*120,'#e8c66a',6,140);
 if(R.dt>3&&!R.shown){R.shown=1;R.state='dead';summary()}}
 function runStats(live){const m=Math.floor((R.time||0)/60),sx=String(Math.floor((R.time||0)%60)).padStart(2,'0'),G=R.got||{},
- order=['axe','dagger','orbw','cleave','vial','comet','star','flame','heart','coin','pouch','chest','rock','bone'],nm=sh=>(DEXI.find(d=>d[0]==sh)||[,sh])[1],
+ order=['axe','dagger','orbw','cleave','vial','comet','star','storm','flame','heart','coin','pouch','chest','rock','bone'],nm=sh=>(DEXI.find(d=>d[0]==sh)||[,sh])[1],
  got=Object.keys(G).sort((a,b)=>(order.indexOf(a)+99)%99-(order.indexOf(b)+99)%99).map(sh=>`<span class="gi" title="${nm(sh)}"><img src="${iconURL(sh)}" alt="">${nm(sh)} <b>×${G[sh]}</b></span>`).join('')||'<small>Nothing yet</small>',
  rel=R.rel.length?R.rel.map(k=>`<div class="rl">${IC(RL[k][0],'rli')}<div><b>${RL[k][1]}</b><br><small>${RL[k][2]}</small></div></div>`).join(''):'<small>None yet</small>';
 return `<div class="sg">${live?`<div>Floor<b>${R.L}</b></div><div>Health<b>${Math.max(0,Math.round(R.hp))} / ${Math.round(stats().max)}</b></div>`:''}<div>Gold earned<b>${CI()}${fmt(R.gain)}</b></div><div>Enemies slain<b>${R.kills||0}</b></div><div>Bosses slain<b>${R.bk||0}</b></div><div>Biggest hit<b>${fmt(R.maxHit||0)}</b></div><div>Damage bonus<b>+${Math.round((R.atk-1)*100)}%</b></div><div>Time<b>${m}:${sx}</b></div></div>
@@ -504,6 +505,7 @@ if(k=='a'){if(K.side<2)R.cg[K.side]=1;for(let j=0;j<CL[S.cls].h;j++)R.hq.push('h
 else if(k=='z'){R.hq.push('c');s='Cleave!';c='#ffd23e'}
 else if(k=='fo'){R.hq.push('fo');s='Fireball!';c='#ff8a3e'}
 else if(k=='io'){R.hq.push('io');s='Ice spell!';c='#9fe0ff'}
+else if(k=='ls'){R.hq.push('ls');s='Lightning!';c='#b4c6d2'}
 else if(k=='v'){R.hq.push('v');s='Venom!';c='#7fe05a'}
 else if(k=='c'||k=='x'){const v=o.val*(1+.25*P('pg'))*(hasR('mag')?1.2:1);S.gold+=v;R.gain+=v;s='+'+fmt(v)+' @coin';if(hasR('vam'))heal(stats().max*.005);save()}
 else if(k=='f'){R.atk*=1.05;s='+5% dmg';c='#ff8a3e'}
@@ -570,9 +572,11 @@ for(const e of R.en){if(!e)continue;e.fl=Math.max(0,e.fl-dt);e.lg=Math.max(0,e.l
 if(e.st=='in'){e.age+=dt;if(e.age>=.35)e.st='alive'}
 else if(e.st=='dying'){e.fade-=dt;if(e.fade<=0){const i=e.i;if(R.q.length){const n=mk(R.q.shift(),i);n.fresh=1;if(R.pend){n.ps=R.pend.ps;n.pt=R.pend.pt;R.pend=null}R.en[i]=n}else R.en[i]=null}}}
 if(R.ph=='atk'){R.ht-=dt;
+if(R.arcs&&R.arcs.length){for(const a of R.arcs)a.t-=dt;for(const a of R.arcs.filter(a=>a.t<=0))if(a.e.st=='alive')hitNow(a.e,a.m,'bolt');R.arcs=R.arcs.filter(a=>a.t>0)}
 if(R.hq.length){if(R.ht<=0){const w_=!R.wu&&windup(R.hq[0]);if(w_){R.wu=1;R.ht=w_[1];wanim(w_[0],w_[1])}else{R.wu=0;if(R.hq[0]=='v'){const al=R.en.filter(x=>x&&x.st=='alive'),e=R.vt&&R.vt.st=='alive'?R.vt:al[Math.random()*al.length|0];R.vt=null;if(e){e.ps=(e.ps||0)+1;e.pt=3;ft(e.x,e.y-e.sz/2-14,'@pois Poisoned','#7fe05a');R.hq.shift();R.ht=.3}}else if({c:1,b:1,gs:1,fo:1,mt:1}[R.hq[0]]){const al=R.en.filter(e=>e&&e.st=='alive'),q=R.hq[0];if(al.length){wfire(q);cleaveNow(al,{c:.7,b:.2,gs:.3,fo:1.2,mt:3}[q]);sfx(q=='c'?'cleave':'boom');if(q!='c')shake=q=='mt'?.6:.25;if(q=='mt')FX.push({k:'mt',t:0});R.hq.shift();R.ht=q=='mt'?.6:.35}}
+else if(R.hq[0]=='ls'){const e=target();if(e){R.hq.shift();const n=chainBolt(e);sfx('zap');R.ht=.3+.11*n}}
 else if(R.hq[0]=='io'){const e=target();if(e){R.hq.shift();hitNow(e,1,'ice');wfire('io',e);if(e.t=='b'||e.t=='g')ft(e.x,e.y-e.sz/2-30,'Resists!','#9fe0ff');R.ht=.25}}else{const e=target();if(e){const q=R.hq.shift();if(q=='r')hitNow(e,stats().rb,'r');else if(R.rageOn){for(const a of R.en.filter(x=>x&&x.st=='alive'))hitNow(a)}else hitNow(e);R.ht=(R.rageOn?.22:.16)*Math.max(.3,Math.min(1,8/(R.hq.length+1)))}}}}}
-else{R.pz+=dt;if(R.pz>.3&&R.floorT==0&&!R.en.some(e=>e&&(e.st=='dying'||e.st=='in')))afterAttack()}}
+else{R.pz+=dt;if(R.pz>.3&&!(R.arcs&&R.arcs.length)&&R.floorT==0&&!R.en.some(e=>e&&(e.st=='dying'||e.st=='in')))afterAttack()}}
 else if(R.ph=='tk'){R.et-=dt;if(R.et<=0){const e=R.tq.shift();
 if(e){if(e.st=='alive'){const d=stats().dm*1.2*e.ps*takeMul(e);e.hp-=d;afterDmg(e);e.fl=.15;ft(e.x,e.y-e.sz/2-14,'@pois '+fmt(d),'#7fe05a');e.pt--;if(e.hp<=0)kill(e);if(e.pt<=0)e.ps=0}R.et=.3}
 else{R.ph='atk';R.pz=0;R.ht=0}}}
@@ -1585,6 +1589,8 @@ function shadeEtch(x,w,h,o){x.save();x.globalCompositeOperation='source-atop';co
 const ISPR={};
 function itemSpr(shape){if(ISPR[shape])return ISPR[shape];const N=72,c=document.createElement('canvas');c.width=c.height=N;const x=c.getContext('2d');x.translate(N/2,N/2);x.scale(2.2,2.2);
 x.strokeStyle='#15110d';x.lineWidth=1.2;x.lineJoin='round';for(const[p,col]of IPATH[shape]){x.fillStyle=col;x.fill(p,'evenodd');x.stroke(p)}
+if(shape=='storm'){x.lineCap='round';const cr=['M-10 10L-5 5L-2 1L2-2L5-6L8-10','M-1 3L1 8','M3-1L9-2','M-1-1L-3-5'];
+ for(const[w,cl]of[[2.6,'rgba(90,116,134,.3)'],[.9,'#7f96a4']])for(const d of cr){x.strokeStyle=cl;x.lineWidth=w;x.stroke(new Path2D(d))}}
 if(shape=='magma'){x.lineCap='round';const cr=['M-6-5L-2-1L-4 4L1 8','M-2-1L4-3L8 1','M4-3L3-8'];
  for(const[w,cl]of[[3.2,'rgba(150,62,22,.45)'],[1.3,'#b8642a']])for(const d of cr){x.strokeStyle=cl;x.lineWidth=w;x.stroke(new Path2D(d))}}
 x.setTransform(1,0,0,1,0,0);
@@ -1689,7 +1695,8 @@ cleave:[['M-13 2L-9-9L-1-13L10-10L13 0L9 10L-2 13L-11 9Z','#6e5e44'],['M-7 5Q0-9
 vial:[['M-3-13L3-13L3-6Q10-2 9 6Q8 13 0 13Q-8 13-9 6Q-10-2-3-6Z','#647d52'],['M-7 3L7 3L7 4.6L-7 4.6Z','#3d4f32']],
 comet:[[C14(4,-4,7)+' M-1-1L-13 9L-11 4L-14 3Z','#9a5734']],
 star:[[C14(0,0,12),'#8fa6b0'],[C14(-4,-4,4),'#c4d2d6'],['M-3-11L0-3L-6 2 M0-3L7-1L9 6 M0-3L2 4','#4d6670'],['M-10-5Q0-14 10-5Q5-8 0-8Q-5-8-10-5Z','#d6e0e2']],
-magma:[['M-11 4L-8-6L-1-11L8-8L12 1L7 9L-4 11Z','#2f2925']]};
+magma:[['M-11 4L-8-6L-1-11L8-8L12 1L7 9L-4 11Z','#2f2925']],
+storm:[['M-13 10L-10 13L-3 6L0 11L3 10L0 4L3 1L11-1L11-4L5-2L10-10L7-12L1-4L-2-8L-5-7L-2-2L-6 2Z','#4a4440']]};
 // ===== drawn UI icons (replace every on-screen emoji), same flat style as the items =====
 const ELL=(cx,cy,rx,ry,a)=>{let d='';for(let i=0;i<28;i++){const t=i/28*Math.PI*2,x=Math.cos(t)*rx,y=Math.sin(t)*ry;d+=(i?'L':'M')+(cx+x*Math.cos(a)-y*Math.sin(a)).toFixed(2)+' '+(cy+x*Math.sin(a)+y*Math.cos(a)).toFixed(2)}return d+'Z'};
 const gearPath=(()=>{let d='';for(let i=0;i<16;i++){const a=i/16*Math.PI*2,r=i%2?8.5:12,a2=a+Math.PI/16*.9;d+=(i?'L':'M')+(Math.cos(a)*r).toFixed(1)+' '+(Math.sin(a)*r).toFixed(1)+'L'+(Math.cos(a2)*r).toFixed(1)+' '+(Math.sin(a2)*r).toFixed(1)}return d+'Z '+C14(0,0,4)})();
@@ -1742,7 +1749,7 @@ let cx=al=='left'?x:al=='right'?x-tw:x-tw/2;g.textAlign='left';parts.forEach((p,
 const IPATH={};for(const k in IP)IPATH[k]=IP[k].map(([d,c])=>[new Path2D(d),c]);
 const IEDGE='#15110d';
 function itemShape(o){switch(o.k){case'a':return S.cls=='warrior'?'axe':S.cls=='rogue'?'dagger':'orbw';case'r':return o.t=='🦴'?'bone':hasR('vol')?'magma':'rock';case'c':return o.t=='💰'?'pouch':'coin';case'x':return'chest';
-case'f':return'flame';case'h':return'heart';case'z':return'cleave';case'v':return'vial';case'fo':return'comet';case'io':return'star';default:return'rock'}}
+case'f':return'flame';case'h':return'heart';case'z':return'cleave';case'v':return'vial';case'fo':return'comet';case'io':return'star';case'ls':return'storm';default:return'rock'}}
 function drawItem(o){const k=o.r/14;g.save();g.translate(o.x,o.y);g.rotate(o.rot||0);g.scale(k,k);g.drawImage(itemSpr(itemShape(o)),-36/2.2,-36/2.2,72/2.2,72/2.2);
 if(o.web&&o.web.k=='weaver'){g.fillStyle='rgba(160,168,100,.45)';g.beginPath();g.ellipse(0,2,17,14,0,0,7);g.fill();g.strokeStyle='rgba(190,196,130,.6)';g.lineWidth=1.2/k;g.beginPath();g.moveTo(-8,12);g.lineTo(-9,20);g.moveTo(5,13);g.lineTo(6,22);g.stroke()}
 else if(o.web){g.strokeStyle='rgba(214,199,168,.75)';g.lineWidth=.9/k;g.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3;g.moveTo(0,0);g.lineTo(Math.cos(a)*17,Math.sin(a)*17)}for(const rr of[6,11,16]){for(let i=0;i<=6;i++){const a=i*Math.PI/3;i?g.lineTo(Math.cos(a)*rr,Math.sin(a)*rr):g.moveTo(Math.cos(a)*rr,Math.sin(a)*rr)}}g.stroke()}
@@ -1836,7 +1843,7 @@ function wfx(k,d,o){WFX.push(Object.assign({k,t:0,d,dl:0},o))}
 function wupd(dt){WA.t+=dt;for(const a of[WT.h,WT.snap])for(let i=0;i<2;i++)a[i]=Math.max(0,a[i]-dt*4);for(const f of WFX)f.t+=dt;WFX=WFX.filter(f=>f.t<f.d+(f.dl||0))}
 // skills that get a wind-up before they land: [animation, seconds]
 function windup(q){const c=S.cls,s=stats();
-if(q=='c')return['cleaveup',.16];if(q=='gs')return['slamup',.34];if(q=='fo')return['fireup',.5];if(q=='io')return['iceup',.4];if(q=='mt')return['metup',.8];if(q=='v')return['venup',.42];
+if(q=='c')return['cleaveup',.16];if(q=='gs')return['slamup',.34];if(q=='fo')return['fireup',.5];if(q=='io')return['iceup',.4];if(q=='ls')return['stormup',.36];if(q=='mt')return['metup',.8];if(q=='v')return['venup',.42];
 if(q=='r'&&c=='warrior')return['rockup',.28];
 if(q=='h'&&c=='warrior'&&s.ex&&!R.rageOn){const e=target();if(e&&e.hp<e.max*.3)return['exeup',.28]}
 return null}
@@ -1855,6 +1862,9 @@ else if(q=='fo'){wanim('throw',.32);for(const x of al)wfx('smoke',.8,{x:x.x,y:x.
 else if(q=='b'){for(const x of al)wfx('smoke',.6,{x:x.x,y:x.y+x.sz*.3,s:x.sz*.7,n:Math.random()*99})}
 else if(q=='mt'){wanim('metdown',.45);wfx('mdust',.9,{n:Math.random()*99})}
 else if(q=='io')wanim('icefade',.35)}
+function chainBolt(e){const al=R.en.filter(x=>x&&x.st=='alive'&&x!==e),order=[e];let cur=e;while(al.length){al.sort((a,b)=>Math.hypot(a.x-cur.x,a.y-cur.y)-Math.hypot(b.x-cur.x,b.y-cur.y));cur=al.shift();order.push(cur)}
+ const mid=[(WHP[0][0]+WHP[1][0])/2,(WHP[0][1]+WHP[1][1])/2-8];wanim('throw',.3);R.arcs=R.arcs||[];
+ order.forEach((t,i)=>{const from=i?order[i-1]:{x:mid[0],y:mid[1]},dl=i*.11;wfx('zap',.32,{dl,x1:from.x,y1:from.y,x2:t.x,y2:t.y,n:1+Math.random()*97});R.arcs.push({e:t,m:Math.pow(.8,i),t:dl+.04})});return order.length}
 function wbolt(e){const i=WT.alt=1-WT.alt;WT.h[i]=1;wfx('bolt',.2,{x1:WHP[i][0],y1:WHP[i][1],x2:e.x,y2:e.y})}
 function wstab(crit){if(crit){wanim('cross',.32);return}const i=WT.alt=1-WT.alt;WT.h[i]=1}
 function wsiphon(e){const i=Math.random()<.5?0:1;wfx('siph',.55,{x1:e.x,y1:e.y,i})}
@@ -1886,16 +1896,22 @@ else{const ice=k=='iceup'?ez(p):k=='icefade'?1-ez(p):0;
   if(k=='fireup'){const q=ez(Math.min(1,p/.6)),f=p>.6?ez((p-.6)/.4):0;x+=s*46*q;y+=8*q-30*f;r+=s*.18*q}
   else if(k=='throw'){const q=1-ez(p);x+=s*46*q*.4;y-=30*q}
   else if(k=='iceup'){r+=s*.16*ice;sy=1-.1*ice}
+  else if(k=='stormup'){const q=ez(p);x+=s*34*q;y-=20*q;r+=s*.14*q}
   else if(k=='metup'){const q=ez(p);y-=56*q;x+=s*18*q}
   else if(k=='metdown'){const q=1-ez(p);y-=56*q;x+=s*18*q}
   const fl=i==0;wdraw('hand',x,y,r,sc,fl,null,null,sy);if(ice)wdraw('hand',x,y,r,sc,fl,wvar('hand','ice'),ice,sy);
   WHP[i]=wpt('hand',x,y,r,sc,fl,sy);
   const [gx,gy]=WHP[i],gr2=11+9*h+Math.sin(T*1.5+i)*.8,gr=g.createRadialGradient(gx,gy+4,0,gx,gy+4,gr2*1.8);gr.addColorStop(0,`rgba(176,132,206,${.16+.34*h})`);gr.addColorStop(1,'rgba(90,60,120,0)');g.fillStyle=gr;g.fillRect(gx-gr2*2,gy-gr2*2,gr2*4,gr2*4)}
+ if(k=='stormup'){const q=ez(p);if(!WA.sd)WA.sd=1+Math.random()*97;const R2=WSEED(WA.sd),[ax,ay]=WHP[0],[bx,by]=WHP[1];g.lineCap='round';g.lineJoin='round';
+  for(const[w,cl]of[[4,`rgba(80,100,120,${.35*q})`],[1.4,`rgba(178,196,208,${.8*q})`]]){g.strokeStyle=cl;g.lineWidth=w;g.beginPath();g.moveTo(ax,ay);const r3=WSEED(WA.sd);for(let j=1;j<7;j++){const t=j/7;g.lineTo(ax+(bx-ax)*t,ay+(by-ay)*t-8*q+(r3()-.5)*14*q)}g.lineTo(bx,by);g.stroke()}}
  if(k=='fireup'&&p<.62){const q=ez(p/.6),mx=(WHP[0][0]+WHP[1][0])/2,my=(WHP[0][1]+WHP[1][1])/2-6,rr=3+11*q,gr=g.createRadialGradient(mx,my,0,mx,my,rr*2.2);gr.addColorStop(0,'rgba(214,126,52,.85)');gr.addColorStop(.35,'rgba(150,62,22,.6)');gr.addColorStop(1,'rgba(60,20,8,0)');g.fillStyle=gr;g.fillRect(mx-rr*3,my-rr*3,rr*6,rr*6)}}
 if(k=='metup'||k=='metdown'){const q=k=='metup'?ez(p):1-ez(p),gr=g.createLinearGradient(0,0,0,CH*.55);gr.addColorStop(0,`rgba(120,24,10,${.5*q})`);gr.addColorStop(1,'rgba(60,10,4,0)');g.fillStyle=gr;g.fillRect(0,0,W,CH*.55)}}
 
 function drawWFX(){for(const f of WFX){if(f.t<f.dl)continue;const p=Math.min(1,(f.t-f.dl)/f.d),R1=WSEED(f.n||1);
- if(f.k=='bolt'){const hx=f.x1+(f.x2-f.x1)*p,hy=f.y1+(f.y2-f.y1)*p-Math.sin(p*Math.PI)*24,t0=Math.max(0,p-.28),tx=f.x1+(f.x2-f.x1)*t0,ty=f.y1+(f.y2-f.y1)*t0-Math.sin(t0*Math.PI)*24;
+ if(f.k=='zap'){const a=1-p,r3=WSEED(f.n),n=8,pts=[[f.x1,f.y1]];for(let j=1;j<n;j++){const t=j/n,nx=-(f.y2-f.y1),ny=f.x2-f.x1,L=Math.hypot(nx,ny)||1,o=(r3()-.5)*22;pts.push([f.x1+(f.x2-f.x1)*t+nx/L*o,f.y1+(f.y2-f.y1)*t+ny/L*o])}pts.push([f.x2,f.y2]);
+  g.lineCap='round';g.lineJoin='round';for(const[w,cl]of[[6,`rgba(70,92,112,${.4*a})`],[2,`rgba(184,200,212,${.85*a})`]]){g.strokeStyle=cl;g.lineWidth=w;g.beginPath();pts.forEach(([x,y],j)=>j?g.lineTo(x,y):g.moveTo(x,y));g.stroke()}
+  const gr=g.createRadialGradient(f.x2,f.y2,0,f.x2,f.y2,18);gr.addColorStop(0,`rgba(150,176,196,${.45*a})`);gr.addColorStop(1,'rgba(60,80,100,0)');g.fillStyle=gr;g.fillRect(f.x2-18,f.y2-18,36,36)}
+ else if(f.k=='bolt'){const hx=f.x1+(f.x2-f.x1)*p,hy=f.y1+(f.y2-f.y1)*p-Math.sin(p*Math.PI)*24,t0=Math.max(0,p-.28),tx=f.x1+(f.x2-f.x1)*t0,ty=f.y1+(f.y2-f.y1)*t0-Math.sin(t0*Math.PI)*24;
   g.strokeStyle='rgba(150,112,186,.5)';g.lineWidth=4;g.lineCap='round';g.beginPath();g.moveTo(tx,ty);g.quadraticCurveTo((tx+hx)/2,(ty+hy)/2-6,hx,hy);g.stroke();
   const gr=g.createRadialGradient(hx,hy,0,hx,hy,12);gr.addColorStop(0,'rgba(206,176,228,.75)');gr.addColorStop(1,'rgba(120,80,160,0)');g.fillStyle=gr;g.fillRect(hx-12,hy-12,24,24)}
  else if(f.k=='rock'){const x=f.x1+(f.x2-f.x1)*p,y=f.y1+(f.y2-f.y1)*p-Math.sin(p*Math.PI)*70;g.save();g.translate(x,y);g.rotate(f.sp+p*9);g.drawImage(itemSpr('rock'),-14,-14,28,28);g.restore()}
