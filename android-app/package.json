@@ -1,0 +1,9 @@
+{
+  "name": "hundred-deep-android",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Android (Google Play) wrapper for Hundred Deep. Built by .github/workflows/android.yml.",
+  "scripts": {
+    "build": "bash build.sh"
+  }
+}

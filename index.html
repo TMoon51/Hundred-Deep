@@ -36,7 +36,8 @@ small{color:#a3978a}.tabs{display:flex;gap:8px;margin:10px 0}.t{flex:1}.t.on{bor
 .cc.gs{border-color:#b8913e!important;box-shadow:0 0 0 1px #b8913e inset,0 0 0 3px #3a2c12 inset,0 0 12px rgba(184,145,62,.3)!important}.gsb{color:#d4ac58;font-weight:700;letter-spacing:.6px;font-size:10px;text-transform:uppercase}.sum.vic{border-color:#b8913e;box-shadow:0 0 0 1px #b8913e inset,0 0 18px rgba(184,145,62,.25)}.gsl{color:#d4ac58;font:700 12px Georgia,serif;letter-spacing:4px;margin-bottom:2px}
 .cc.on{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac) inset,0 0 14px rgba(200,115,42,.25);background:linear-gradient(#2c2117,#1a140f)}
 .stat{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;margin:12px 0 2px;color:#cdbb99;font-size:14px}.stat span{white-space:nowrap}
-.seg{display:flex;gap:6px;margin:16px 0 8px}.seg button{flex:1;padding:9px 4px;font-size:13px}.seg button.on{border-color:var(--ac);background:#2a2018;color:#f0dfbf}
+.seg{display:flex;gap:4px;margin:16px 0 8px}.seg button{flex:1;padding:9px 2px;font-size:12px;min-width:0}
+#fakead{position:fixed;inset:0;z-index:99;background:#000;color:#cdbb99;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-family:Georgia,serif}#fakead i{width:160px;height:4px;background:#3a2f25;border-radius:2px;overflow:hidden;position:relative}#fakead i:after{content:'';position:absolute;inset:0;background:#c9a24a;animation:fa 2.2s linear forwards;transform-origin:left}@keyframes fa{from{transform:scaleX(0)}to{transform:scaleX(1)}}.seg button.on{border-color:var(--ac);background:#2a2018;color:#f0dfbf}
 .chain{position:relative;margin-left:14px;padding-left:18px;border-left:2px solid #3b3229}.node{position:relative}.node:before{content:'';position:absolute;left:-26px;top:20px;width:12px;height:12px;border-radius:50%;background:#3b3229;border:2px solid #0e0c0a}
 .node.own:before{background:var(--ac)}.node.next:before{background:#e0b04a;box-shadow:0 0 8px #e0b04a}.node.lock{opacity:.55}
 .dex{display:grid;grid-template-columns:1fr 1fr;gap:8px}.dc{background:var(--pn);border:1px solid var(--bd);border-radius:12px;padding:8px;display:flex;gap:8px;align-items:flex-start}
@@ -67,7 +68,7 @@ if(!S.cs){S.cs={};for(const c of CLS)S.cs[c]={gold:S.gold||0,sh:S.sh||0,desc:S.d
 function stash(){S.cs[S.cls]={};for(const f of PF)S.cs[S.cls][f]=S[f]}
 function loadCls(){const d=S.cs[S.cls]||{};S.cb=d.cb||0;S.gold=d.gold||0;S.sh=d.sh||0;S.psh=d.psh||0;S.desc=d.desc||0;S.ab=d.ab||0;S.pu=JSON.parse(JSON.stringify(d.pu||{}));S.sf=d.sf||1}
 S.dex=S.dex||{e:{},m:{},b:{},r:{},g:0};S.st=Object.assign({runs:0,wins:0,kills:0,bosses:0,gold:0,time:0,hit:0,killers:{},relics:{},cr:{},hist:[]},S.st||{});loadCls();
-const saveStr=()=>{stash();S.at=Date.now();return JSON.stringify({cls:S.cls,best:S.best,u:S.u,cs:S.cs,mute:S.mute,nomus:S.nomus,dex:S.dex,st:S.st,run:S.run||null,red:S.red||{},bkr:S.bkr||0,at:S.at})};
+const saveStr=()=>{stash();S.at=Date.now();return JSON.stringify({cls:S.cls,best:S.best,u:S.u,cs:S.cs,mute:S.mute,nomus:S.nomus,dex:S.dex,st:S.st,run:S.run||null,red:S.red||{},bkr:S.bkr||0,at:S.at,own:S.own,fast:S.fast,mtest:S.mtest})};
 // never let a stale copy of the game (another tab or window) overwrite a save that is further along; adopt it instead
 let FORCESAVE=0;
 const save=()=>{try{const old=localStorage.getItem('cc2');if(old&&!FORCESAVE){const o=JSON.parse(old);if(progOf(o)>progOf(S)+1){cloudApply(old);return}}localStorage.setItem('cc2',saveStr())}catch(e){}FORCESAVE=0;cloudSoon()};
@@ -110,13 +111,13 @@ if(TAB=='up'){pane=[['sz','@claw Claw size','+2% claw size per level: wider reac
 else if(TAB=='sk'){pane='<div class="chain">'+b.sk.map((x,i)=>{const own=u.sk>i,nx=u.sk==i;return`<div class="node ${own?'own':nx?'next':'lock'}"><div class="r"><div><b>${x[0]}</b> ${own?IC('check'):''}<br><small>${x[1]}</small></div>${own?'':`<button ${(!nx||S.gold<SC[i])?'disabled':''} onclick="sk(${i})">${CI()}${fmt(SC[i])}</button>`}</div></div>`}).join('')+'</div>'}
 else if(TAB=='soul'){const gain=shards();pane=`<div class="r"><div><b>${IC('down')}Descend</b><br><small>${S.ab>=50?`Reset this ${b.n}'s gold, upgrades and skill tree and release <b style="color:#e7d6b4">${IC('shard')}${gain+(S.psh||0)} Soul Shards</b>: the ${fmt(S.psh||0)} sealed from your runs plus a ${gain} bonus for your best floor this descent.`:`Reach floor 50 to unlock. Best this descent: ${S.ab}.`}<br><span style="opacity:.8">Every run that gets past floor 40 seals Soul Shards into this class, deeper runs sealing more. Sealed shards can't be spent until you Descend.${S.psh&&S.ab<50?` Sealed so far: ${IC('shard')}${fmt(S.psh)}.`:''}</span></small></div><button ${S.ab>=50?'':'disabled'} onclick="descend()">${S.dc?'Tap again':'Descend'}</button></div>`+
  `<h3>${IC('shard')}${b.n} Soul Shards: ${fmt(S.sh)}${S.psh?` <small style="opacity:.75;font-weight:400">· ${fmt(S.psh)} sealed until you Descend</small>`:''}</h3>`+PU.map(p=>{const l=P(p[0]),mx=p[5]&&l>=p[5],co=pcost(p,l);return`<div class="r"><div><b>${TI(p[1])}</b> Lv ${l}${p[5]?'/'+p[5]:''}<br><small>${p[0]=='pgr'&&S.cls=='rogue'?`+8% claw grip, and the hook grows barbs: each item it skewers has a ${15*(l+1)}% chance to drag up a piece of loot touching it${l?` (now ${15*l}%)`:''}`:p[2]}</small></div>${mx?'<small>MAX</small>':`<button ${S.sh<co?'disabled':''} onclick="pup('${p[0]}')">${IC('shard')}${fmt(co)}</button>`}</div>`}).join('')}
-else if(TAB=='dex')pane=dexPane();else pane=statsPane();
-$d('#menu').innerHTML=`<div class="top"><div class="ttl">${IC('chain','tti')}Hundred Deep</div><div class="tb"><button style="${S.nomus||S.mute?'opacity:.45':''}" onclick="toggleMusic()">${IC('music','bi')}</button><button onclick="toggleMute()">${IC(S.mute?'mute':'sound','bi')}</button></div></div>
+else if(TAB=='dex')pane=dexPane();else if(TAB=='shop')pane=shopPane();else pane=statsPane();
+$d('#menu').innerHTML=`<div class="top"><div class="ttl">${IC('chain','tti')}Hundred Deep</div><div class="tb">${owns('speed2x')?`<button style="${fastOn()?'':'opacity:.45'}" onclick="toggleFast()">2x</button>`:''}<button style="${S.nomus||S.mute?'opacity:.45':''}" onclick="toggleMusic()">${IC('music','bi')}</button><button onclick="toggleMute()">${IC(S.mute?'mute':'sound','bi')}</button></div></div>
 <div class="tag">Descend. Grab. Survive. Something waits at the bottom.</div>
 <div class="cls">${cards}</div>${isGS()?`<div class="mode"><button class="${abyssOn()?'':'on'}" onclick="setMode('deep')">Hundred Deep</button><button class="${abyssOn()?'on ab':''}" onclick="setMode('abyss')">The Abyss</button></div>${abyssOn()?`<small class="abt">Enemies have 2.4x health and hit 60% harder. A curse after every boss. Bosses drop Soul Crystals, and runs pay +50% Soul Shards. Abyss best: floor ${(S.st.abest||{})[S.cls]||0}</small>`:''}`:''}
 ${typeof installHint=='function'?installHint():''}${!SAFE()&&IOS&&!window.WEBAPP&&S.st.runs-(S.bkr||0)>=3?`<button style="width:100%;margin:2px 0 8px;font-size:13px;border-color:#7a5a2a" onclick="bkCopy()">${BK.copied?'Backup code copied. Keep it somewhere safe':'Your progress on this iPhone is only on this device. Tap to copy a backup code'}</button>`:''}<div class="stat"><span>${CI()}<b>${fmt(S.gold)}</b></span><span>${IC('shard')}<b>${fmt(S.sh)}</b>${S.psh?` <small style="opacity:.75">+${fmt(S.psh)} sealed</small>`:''}</span><span>Descents ${S.desc}</span><span>This descent: floor ${S.ab}</span></div>
 ${S.run?`<button class="go" onclick="cont()">Continue · ${CL[S.run.cls].n} · floor ${S.run.L}</button>`:''}${start}<button class="${S.run?'':'go'}" style="${S.run?'width:100%;margin-top:10px':''}" onclick="newRun()">${S.run?(S.nr?'Tap again to abandon the saved run':'New run'):abyssOn()?'Enter the Abyss':'Enter the dungeon'}${sf>1?' · floor '+sf:''}</button>
-<div class="seg">${[['up','Upgrades'],['sk','Skills'],['soul','Soul'],['dex','Index'],['st','Stats']].map(([k,n])=>`<button class="${TAB==k?'on':''}" onclick="setTab('${k}')">${n}</button>`).join('')}</div>${pane}`}
+<div class="seg">${[['up','Upgrades'],['sk','Skills'],['soul','Soul'],['dex','Index'],['st','Stats'],['shop','Shop']].map(([k,n])=>`<button class="${TAB==k?'on':''}" onclick="setTab('${k}')">${n}</button>`).join('')}</div>${pane}`}
 
 function statsPane(){const T=S.st,hm=t=>{const m=Math.round(t/60);return m<60?m+'m':Math.floor(m/60)+'h '+(m%60)+'m'};
 const tile=(n,v)=>`<div>${n}<b>${v}</b></div>`;
@@ -318,7 +319,7 @@ if(c=='rogue'){if(k>0)crit=.3;if(k>1)dod=.25;if(k>3)pp=.03;if(k>4)rip=1;if(k>5)p
 if(c=='mage'){if(k>0)fr=.2;if(k>1)red=.25;if(k>2)hh=.025;if(k>4)sh=.5;if(k>5)gw=1;if(k>6)mn=1;if(k>7)el=1;if(k>8)rc=1}
 dm*=1+.25*P('pdm');if(hasR('hov'))dm*=1.5;if(hasR('bul'))red=1-(1-red)*.8;if(hasR('luk'))crit+=.15;crit+=.04*P('pcr');if(hasR('frz'))fr+=.12;
 return{dm,crit,red,dod,kh,hh,fr,rb,ex,ls,pp,rip,pl,ch,sh,gw,rg,gs,br,mk,cb,sw,mn,el,rc,max:100*Math.pow(1.15,u.hp)*(1+.25*P('php'))*(hasR('hrt')?1.2:1)*(hasR('gcr')?.7:1)}}
-const RUNF=['abyss','cu','sg','L','hp','rel','atk','rage','mana','combo','ls','gain','kills','bk','time','turns','tn','maxHit','seen','rf','got'];
+const RUNF=['rv','abyss','cu','sg','L','hp','rel','atk','rage','mana','combo','ls','gain','kills','bk','time','turns','tn','maxHit','seen','rf','got'];
 function ckpt(){if(!R||R.state=='dying'||R.state=='dead'||R.state=='victory')return;const r={cls:S.cls};for(const k of RUNF)r[k]=R[k];S.run=JSON.parse(JSON.stringify(r));save()}
 function go(res){WFX=[];WA={k:'',t:0,d:0};R={pois:[],ban:[],bt:0,seen:{},skim:0,twd:null,rage:0,rageOn:0,brace:1,mark:null,combo:0,cg:[0,0],tn:0,mana:0,L:Math.min(S.sf||1,maxSF()),rel:[],fb:1,rf:0,so:0,hp:1,atk:1,spd:1,gain:0,state:'play',sw:0,fl:0,hq:[],tk:false,rc:0,ph:'claw',ht:0,pz:0,eq:[],et:0,fresh:false,turns:0,en:[],q:[],vis:1,floorT:0,ls:0,pend:null,abyss:abyssOn(),cu:[],sg:0};R.hp=stats().max;if(res&&res.L)for(const k of RUNF)if(res[k]!=null)R[k]=JSON.parse(JSON.stringify(res[k]));
 K={items:[],x:S.cls=='rogue'?100:W/2,y:HOME,ph:'aim',t:0,open:1,touch:0,tx:W/2,side:0,px:[100,260,180],small:0};refill();for(let i=0;i<90;i++)phys(1/60);spawn();
@@ -472,9 +473,9 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&scr=='game
 function summary(){const won=R.won,rel='',sh=S.ab>=50?`<div style="color:#e0b04a;margin-top:6px">${IC('down')}Descend is ready: ${IC('shard')}${shards()} Soul Shards bonus</div>`:'';
 if(won){const ab=R.abyss,gs=(ab?S.st.ags:S.st.gs||{})[S.cls]||{},m=Math.floor((R.time||0)/60),sx=String(Math.floor((R.time||0)%60)).padStart(2,'0');
 $d('#ov').innerHTML=`<div class="sum vic${ab?' abv':''}"><div class="gsl">${ab?'ABYSSAL GODSLAYER':'GODSLAYER'}</div><h2>Vessa is slain</h2><div class="kb">${ab?`The ${CL[S.cls].n} went down through the Abyss and ended her again, under ${R.cu.length} curses.`:`The ${CL[S.cls].n} reached the bottom of the hundred and ended the First God.`}</div>
-<div class="sg"><div>Class<b>${CL[S.cls].n}</b></div><div>This run<b>${m}:${sx}</b></div><div>${CL[S.cls].n} runs it took<b>${gs.runs||'-'}</b></div><div>First slain<b>${gs.t?new Date(gs.t).toLocaleDateString():'-'}</b></div></div>${R.bounty?`<div class="shg">${IC('shard')}+${R.bounty} Soul Shards · ${ab?'the Abyssal bounty':'the Godslayer\'s bounty'}<small style="display:block;font:12px system-ui;color:#8a7d6c;margin-top:2px">Paid once per class, ready to spend now</small></div>`:''}${R.rs?`<div class="shg">${IC('shard')}+${R.rs} Soul Shards sealed<small style="display:block;font:12px system-ui;color:#8a7d6c;margin-top:2px">${fmt(S.psh)} sealed in all · released when you Descend</small></div>`:''}${runStats(0)}${sh}<button class="go" onclick="toMenu()">Return to camp</button><button style="width:100%;margin-top:8px" onclick="go()">Descend again</button></div>`;$d('#ov').hidden=false;return}
+<div class="sg"><div>Class<b>${CL[S.cls].n}</b></div><div>This run<b>${m}:${sx}</b></div><div>${CL[S.cls].n} runs it took<b>${gs.runs||'-'}</b></div><div>First slain<b>${gs.t?new Date(gs.t).toLocaleDateString():'-'}</b></div></div>${R.bounty?`<div class="shg">${IC('shard')}+${R.bounty} Soul Shards · ${ab?'the Abyssal bounty':'the Godslayer\'s bounty'}<small style="display:block;font:12px system-ui;color:#8a7d6c;margin-top:2px">Paid once per class, ready to spend now</small></div>`:''}${R.rs?`<div class="shg">${IC('shard')}+${R.rs} Soul Shards sealed<small style="display:block;font:12px system-ui;color:#8a7d6c;margin-top:2px">${fmt(S.psh)} sealed in all · released when you Descend</small></div>`:''}${runStats(0)}${sh}${R.adG?'<div class="shg">Gold doubled!</div>':adsOn()&&R.gain>=1?`<button style="width:100%;margin-top:10px;border-color:#8a6a3e" onclick="adGold()">Watch an ad: double this run's gold (+${CI()}${fmt(R.gain)})</button>`:''}<button class="go" onclick="toMenu()">Return to camp</button><button style="width:100%;margin-top:8px" onclick="go()">Descend again</button></div>`;$d('#ov').hidden=false;return}
 $d('#ov').innerHTML=`<div class="sum"><h2>${won?'Vessa is slain':R.left?'You left the dungeon':'You have fallen'}</h2><div class="kb">${won?'All 100 floors conquered.':R.left?'Climbed out from floor '+R.L+' with your haul.':'Slain by '+R.cause+' on floor '+R.L}</div>
-<div class="sg"><div>Floor reached<b>${R.L}</b></div><div>${CL[S.cls].n} best<b>${S.cb}</b></div></div>${R.sg?`<div class="shg">${IC('shard')}+${fmt(R.sg)} Soul Shards from crystals</div>`:''}${R.rs?`<div class="shg">${IC('shard')}+${R.rs} Soul Shards sealed${R.abyss?' (Abyss +50%)':''}<small style="display:block;font:12px system-ui;color:#8a7d6c;margin-top:2px">${fmt(S.psh)} sealed in all · released when you Descend</small></div>`:`<div class="shg dim">Reach past floor 40 to earn Soul Shards</div>`}${runStats(0)}${sh}${SAFE()?'':`<button style="width:100%;margin:8px 0 2px" onclick="endBk(this)">Copy backup code</button><small style="display:block;opacity:.7;margin-bottom:6px">Saved on this device only${IOS?': iPhone browsers can clear it':''}. Paste the code in Stats to restore.</small>`}<button class="go" onclick="toMenu()">Return to camp</button><button style="width:100%;margin-top:8px" onclick="go()">Try again</button></div>`;$d('#ov').hidden=false}
+<div class="sg"><div>Floor reached<b>${R.L}</b></div><div>${CL[S.cls].n} best<b>${S.cb}</b></div></div>${R.sg?`<div class="shg">${IC('shard')}+${fmt(R.sg)} Soul Shards from crystals</div>`:''}${R.rs?`<div class="shg">${IC('shard')}+${R.rs} Soul Shards sealed${R.abyss?' (Abyss +50%)':''}<small style="display:block;font:12px system-ui;color:#8a7d6c;margin-top:2px">${fmt(S.psh)} sealed in all · released when you Descend</small></div>`:`<div class="shg dim">Reach past floor 40 to earn Soul Shards</div>`}${runStats(0)}${sh}${R.adG?'<div class="shg">Gold doubled!</div>':adsOn()&&R.gain>=1?`<button style="width:100%;margin-top:10px;border-color:#8a6a3e" onclick="adGold()">Watch an ad: double this run's gold (+${CI()}${fmt(R.gain)})</button>`:''}${SAFE()?'':`<button style="width:100%;margin:8px 0 2px" onclick="endBk(this)">Copy backup code</button><small style="display:block;opacity:.7;margin-bottom:6px">Saved on this device only${IOS?': iPhone browsers can clear it':''}. Paste the code in Stats to restore.</small>`}<button class="go" onclick="toMenu()">Return to camp</button><button style="width:100%;margin-top:8px" onclick="go()">Try again</button></div>`;$d('#ov').hidden=false}
 function drawEnd(){const p=Math.min(1,R.dt/2.2),T=R.dt;
 if(R.state=='dying'||(!R.won&&R.state=='dead')){g.save();g.globalCompositeOperation='saturation';g.globalAlpha=p;g.fillStyle='hsl(0,0%,50%)';g.fillRect(0,0,W,H);g.restore();
  g.fillStyle=`rgba(0,0,0,${.45*p})`;g.fillRect(0,0,W,H);const rg=g.createRadialGradient(W/2,H*.4,60,W/2,H*.4,W);rg.addColorStop(0,'rgba(90,0,0,0)');rg.addColorStop(1,`rgba(110,0,0,${.7*p})`);g.fillStyle=rg;g.fillRect(0,0,W,H);
@@ -535,14 +536,14 @@ else if(k=='fo'){R.hq.push('fo');s='Fireball!';c='#ff8a3e'}
 else if(k=='io'){R.hq.push('io');s='Ice spell!';c='#9fe0ff'}
 else if(k=='ls'){R.hq.push('ls');s='Lightning!';c='#b4c6d2'}
 else if(k=='v'){R.hq.push('v');s='Venom!';c='#7fe05a'}
-else if(k=='c'||k=='x'){const v=o.val*(1+.25*P('pg'))*(hasR('mag')?1.4:1)*(hasR('btt')?2:1);S.gold+=v;R.gain+=v;s='+'+fmt(v)+' @coin';if(hasR('vam'))heal(stats().max*.02);save()}
+else if(k=='c'||k=='x'){const v=o.val*(1+.25*P('pg'))*(hasR('mag')?1.4:1)*(hasR('btt')?2:1)*goldMul();S.gold+=v;R.gain+=v;s='+'+fmt(v)+' @coin';if(hasR('vam'))heal(stats().max*.02);save()}
 else if(k=='s'){S.psh=(S.psh||0)+o.val;R.sg=(R.sg||0)+o.val;s='+'+fmt(o.val)+' @shard sealed';c='#b0a2cc';save()}
 else if(k=='f'){R.atk*=1.05;s='+5% dmg';c='#ff8a3e'}
 else if(k=='h'){heal(stats().max*.25);s='+25% HP';c='#6f6'}
 else if(k=='r'&&hasR('hcl')&&!(vol||(stats().rb&&o.t=='🪨'))){const d=stats().max*.04;R.hp=Math.max(1,R.hp-d);s='Junk bites -'+fmt(d);c='#b0443a'}
 else if(k=='r'&&(vol||(stats().rb&&o.t=='🪨'))){if(stats().rb)R.hq.push('r');if(vol)R.hq.push('b');s=vol?'Boom!':'Rubble!';c='#d9c39a'}
 else{s='junk';c='#999'}
-K.sum.push([s,k=='c'||k=='x'?o.val*(1+.25*P('pg'))*(hasR('mag')?1.4:1)*(hasR('btt')?2:1):0])}
+K.sum.push([s,k=='c'||k=='x'?o.val*(1+.25*P('pg'))*(hasR('mag')?1.4:1)*(hasR('btt')?2:1)*goldMul():0])}
 function clawUpd(dt){phys(dt);const k=K,sp=spdm(),lo=26,hi=W-26;
 if(k.ph=='aim'){if(k.touch){const d=k.tx-k.x,st=3200*dt;k.x+=Math.abs(d)<st?d:Math.sign(d)*st}k.x=Math.max(lo,Math.min(hi,k.x))}
 else if(k.ph=='down'&&HOOK()){k.y+=300*sp*dt;let end=k.y>=DOWN;if(end)k.y=DOWN;const ty=k.y+HT;let n=k.items.filter(o=>o.h&&!o.barb).length;
@@ -585,7 +586,7 @@ function burn(e,n){const free=K.items.filter(o=>!o.h);if(!free.length)return;con
 for(const o of band)K.items.splice(K.items.indexOf(o),1);FX.push({k:'burn',t:0,y:y0});sfx('burn');shake=.3;ft(e.x,e.y-e.sz/2-30,'@flame Burns '+band.length+' items!','#ff8a3e')}
 function tilt(e){sfx('tilt');const d=Math.random()<.5?-1:1;for(const o of K.items)if(!o.h){o.vx+=d*(380+Math.random()*160);o.vy-=120}shake=.35;ft(e.x,e.y-e.sz/2-30,(d<0?'@arrL':'@arrR')+(e.house?' Shakes the reliquary!':e.em=='bellringer'?' The bell tolls!':' Shakes the machine!'),'#ffb02e')}
 function hurt(d,txt,x){const s=stats();R.hp-=d;sfx(txt.startsWith('@pois')?'bubble':txt.startsWith('SLAM')?'slam':'hurt');if(s.rg)R.rage=Math.min(100,R.rage+d/s.max*200);ft(x,190,txt+fmt(d),'#ff5a5a');
-if(R.hp<=0){if(s.ls&&!R.ls){R.ls=1;R.hp=1;ft(W/2,160,'@shield Last Stand!','#ffd23e')}else{die();return true}}return false}
+if(R.hp<=0){if(s.ls&&!R.ls){R.ls=1;R.hp=1;ft(W/2,160,'@shield Last Stand!','#ffd23e')}else if(canRevive()){R.hp=0;offerRevive();return true}else{die();return true}}return false}
 function offerRelic(hd,sub){const pool=Object.keys(RL).filter(k=>!R.rel.includes(k)&&!CURSED.has(k)),cp=R.abyss?Object.keys(RL).filter(k=>!R.rel.includes(k)&&CURSED.has(k)):[],ch=[];if(!pool.length&&!cp.length)return false;if(cp.length)ch.push(cp[Math.random()*cp.length|0]);while(ch.length<3&&pool.length)ch.push(pool.splice(Math.random()*pool.length|0,1)[0]);
 ch.forEach(k=>S.dex.r[k]=1);save();sfx('chime');R.state='relic';$d('#ov').innerHTML=`<h2>${hd||(R.L%10?'Mini-boss':'Boss')+' down!'}</h2><div>${sub||'Choose a relic for this run'}</div>`+ch.map(k=>`<button class="rel${CURSED.has(k)?' crel':''}" onclick="takeRelic('${k}')">${IC(RL[k][0],'rli')}<div><b>${RL[k][1]}</b>${CURSED.has(k)?' <small class="cur">CURSED</small>':''}<br><small>${RL[k][2]}</small></div></button>`).join('');$d('#ov').hidden=false;return true}
 function takeRelic(k){if(!R||R.state!='relic')return;R.rel.push(k);S.st.relics[k]=(S.st.relics[k]||0)+1;if(k=='shp')R.atk*=1.25;if(k=='hrt')R.hp=stats().max;$d('#ov').hidden=true;R.state='play';ft(W/2,104+((R.rel.length-1)%4)*20,RL[k][1],'#ffd23e',15,1.6);if(!nextSkip()&&R.skipping){R.skipping=false;ckpt()}}
@@ -2167,11 +2168,58 @@ g.globalAlpha=.55+.3*Math.sin(TT*2);g.fillStyle='#c9a35a';g.font='600 16px Georg
 if(TFADE){TFADE+=dt;g.fillStyle=`rgba(0,0,0,${Math.min(1,TFADE/.5)})`;g.fillRect(0,0,W,H);if(TFADE>.55){TFADE=0;toMenu()}}
 grain()}
 function leaveTitle(){if(!TFADE){TFADE=.001;ensureAudio();sfx('clank')}}
-let last=0;function loop(ts){const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(scr=='title'){machineArt();drawTitle(dt)}else if(scr=='game'&&R){upd(dt);draw()}requestAnimationFrame(loop)}
+// ---------- store & ads ----------
+// Android build: replace these with your real AdMob rewarded unit and Play Console product IDs.
+// The rewarded ID below is Google's official TEST unit, safe to use while developing.
+const CFG={rewarded:'ca-app-pub-3940256099942544/5224354917',prod:{gold2x:'gold_2x',speed2x:'speed_2x'}};
+const IAP={gold2x:['pouch','Golden Claw','Double gold from every coin and chest, for every class, forever.'],speed2x:['storm','Swift Hand','Unlocks 2x combat speed: attacks, enemy turns and the claw all play twice as fast. Switch it on or off any time.']};
+const NAT=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
+S.own=S.own||{};
+const TEST=()=>!NAT&&!!S.mtest,adsOn=()=>NAT||TEST(),owns=k=>!!S.own[k]&&(NAT||TEST()),fastOn=()=>owns('speed2x')&&S.fast!==false,goldMul=()=>owns('gold2x')?2:1;
+const MON={price:{},adReady:!NAT,busy:0};
+function toggleTest(){S.mtest=!S.mtest;save();menu()}
+function toggleFast(){S.fast=!fastOn();save();menu()}
+// rewarded ad: resolves true only if the player earned the reward
+function showAd(){if(MON.busy)return Promise.resolve(false);MON.busy=1;const susp=AC&&AC.state=='running';if(susp)AC.suspend();
+ const done=ok=>{MON.busy=0;if(susp&&AC)AC.resume();return ok};
+ if(!NAT)return new Promise(r=>{const d=document.createElement('div');d.id='fakead';d.innerHTML='<b>Ad plays here</b><small>Test mode: real ads only run in the Android app</small><i></i>';document.body.appendChild(d);setTimeout(()=>{d.remove();r(done(true))},2200)});
+ const A=Capacitor.Plugins.AdMob;return new Promise(async r=>{let got=false;const hs=[];
+  const fin=v=>{hs.forEach(h=>h&&h.remove&&h.remove());r(done(v));MON.adReady=false;loadAd()};
+  try{hs.push(await A.addListener('onRewardedVideoAdReward',()=>got=true));hs.push(await A.addListener('onRewardedVideoAdDismissed',()=>fin(got)));hs.push(await A.addListener('onRewardedVideoAdFailedToShow',()=>fin(false)));
+   if(!MON.adReady)await A.prepareRewardVideoAd({adId:CFG.rewarded});await A.showRewardVideoAd()}catch(e){fin(false)}})}
+async function loadAd(){if(!NAT)return;try{await Capacitor.Plugins.AdMob.prepareRewardVideoAd({adId:CFG.rewarded});MON.adReady=true}catch(e){MON.adReady=false;setTimeout(loadAd,30000)}}
+async function initAds(){if(!NAT||!Capacitor.Plugins.AdMob)return;const A=Capacitor.Plugins.AdMob;try{await A.initialize({});
+ try{const c=await A.requestConsentInfo();if(c.isConsentFormAvailable&&c.status=='REQUIRED')await A.showConsentForm()}catch(e){}loadAd()}catch(e){}}
+// purchases (Google Play Billing through cordova-plugin-purchase)
+function grant(k,quiet){if(owns(k))return;S.own[k]=1;save();if(!quiet)sfx('chime');if(scr=='menu')menu()}
+function buy(k){if(!NAT){if(!TEST())return;if(confirm(`Test mode: unlock ${IAP[k][1]} for free?\n\nIn the Android app this opens Google Play checkout.`))grant(k);return}
+ try{const st=CdvPurchase.store,p=st.get(CFG.prod[k],CdvPurchase.Platform.GOOGLE_PLAY);if(p&&p.getOffer())p.getOffer().order();else alert('The store is not available right now. Try again in a moment.')}catch(e){alert('The store is not available right now.')}}
+function restore(){if(!NAT){if(TEST()){S.own={};S.fast=true;save();menu()}return}try{CdvPurchase.store.restorePurchases().then(()=>menu())}catch(e){}}
+function initStore(){if(!window.CdvPurchase)return;const{store:st,ProductType:T,Platform:PL}=CdvPurchase,ids=Object.entries(CFG.prod);
+ st.register(ids.map(([k,id])=>({id,type:T.NON_CONSUMABLE,platform:PL.GOOGLE_PLAY})));
+ const sync=()=>{for(const[k,id]of ids){const p=st.get(id,PL.GOOGLE_PLAY);if(p&&p.pricing)MON.price[k]=p.pricing.price;if(st.owned(id))grant(k,1)}if(scr=='menu'&&TAB=='shop')menu()};
+ st.when().approved(t=>t.verify()).verified(r=>r.finish()).finished(()=>sync()).productUpdated(sync).receiptUpdated(sync);
+ st.initialize([PL.GOOGLE_PLAY]).then(sync)}
+if(NAT){initAds();document.addEventListener('deviceready',initStore,false)}
+function shopPane(){const b=k=>{const[e,n,d]=IAP[k],o=owns(k);return`<div class="r"><div><b>${IC(e)}${n}</b>${o?' ✓':''}<br><small>${d}</small></div>${o?(k=='speed2x'?`<button onclick="toggleFast()">${fastOn()?'2x on':'2x off'}</button>`:'<small>Owned</small>'):(NAT?`<button onclick="buy('${k}')">${MON.price[k]||'Buy'}</button>`:TEST()?`<button onclick="buy('${k}')">Test buy</button>`:'<small style="white-space:nowrap">In the app</small>')}</div>`};
+ return `<h3>One-time unlocks</h3>${b('gold2x')}${b('speed2x')}
+<h3>Free with ads</h3><div class="r"><div><small>Ads are always optional. After a run you can watch one to <b style="color:#e7d6b4">double that run's gold</b>, and once per run you can watch one to <b style="color:#e7d6b4">rise again</b> at 50% HP when you fall.</small></div></div>
+${NAT||TEST()?`<button style="width:100%;margin-top:8px" onclick="restore()">${NAT?'Restore purchases':'Reset test purchases'}</button>`:'<small style="display:block;margin-top:8px;color:#a3978a">Unlocks and ads come with the Google Play version of Hundred Deep. Your progress here is not affected.</small>'}
+${NAT?'':`<button style="width:100%;margin-top:14px;font-size:12px;opacity:.6" onclick="toggleTest()">Developer test mode · ${TEST()?'on':'off'}</button>${TEST()?'<small style="display:block;margin-top:6px;color:#8a7d6b">Test mode: purchases and ads are simulated on this device. Real payments only happen in the Android app.</small>':''}`}`}
+// rewarded: double this run's gold
+async function adGold(){if(R.adG||!adsOn())return;const ok=await showAd();if(!ok){adFail();return}R.adG=1;S.gold+=R.gain;S.st.gold+=Math.round(R.gain);R.gain*=2;save();sfx('coin');summary()}
+// rewarded: rise again once per run
+function canRevive(){return !R.rv&&(NAT?MON.adReady:TEST())}
+function offerRevive(){R.state='revive';sfx('die');$d('#ov').innerHTML=`<div class="sum"><h2>You are falling…</h2><div class="kb">Floor ${R.L} · once per run</div>
+<button class="go" onclick="revive()">Watch an ad: rise again at 50% HP</button><button style="width:100%;margin-top:8px" onclick="giveUp()">Accept death</button></div>`;$d('#ov').hidden=false}
+async function revive(){if(R.state!='revive')return;const ok=await showAd();if(!ok){adFail();return giveUp()}R.rv=1;R.hp=stats().max*.5;R.eq=[];R.pois=[];R.state='play';$d('#ov').hidden=true;sfx('heal');shake=.3;ft(W/2,160,'You rise again','#e8c66a')}
+function giveUp(){if(R.state!='revive')return;$d('#ov').hidden=true;R.rv=1;R.state='play';die()}
+function adFail(){const t=$d('#ov .sum');if(t&&!t.querySelector('.adx'))t.insertAdjacentHTML('beforeend','<small class="adx" style="display:block;margin-top:8px;color:#c98a6a">No ad available right now.</small>')}
+let last=0;function loop(ts){const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(scr=='title'){machineArt();drawTitle(dt)}else if(scr=='game'&&R){upd(dt);if(fastOn()&&R.state=='play'&&!R.paused&&!R.cine&&!(K.ph=='aim'&&R.ph=='claw')){const t=R.time;upd(dt);R.time=t}draw()}requestAnimationFrame(loop)}
 menu();scr='title';$d('#menu').hidden=true;$d('#game').hidden=false;requestAnimationFrame(loop);
 </script><script>
 // ---- web app: offline + updates, keep storage, install hints ----
-if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+if('serviceWorker' in navigator&&!NAT)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 let INSTALL_EVT=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();INSTALL_EVT=e;if(scr=='menu')menu()});
 addEventListener('appinstalled',()=>{INSTALL_EVT=null;if(scr=='menu')menu()});

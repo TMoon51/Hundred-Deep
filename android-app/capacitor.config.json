@@ -1,0 +1,10 @@
+{
+  "appId": "com.hundreddeep.game",
+  "appName": "Hundred Deep",
+  "webDir": "www",
+  "backgroundColor": "#0b0908",
+  "android": {
+    "backgroundColor": "#0b0908",
+    "allowMixedContent": false
+  }
+}
