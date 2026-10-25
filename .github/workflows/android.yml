@@ -7,21 +7,25 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
 
-      - uses: android-actions/setup-android@v3
+      - name: Android SDK (preinstalled on GitHub runners)
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ -x "$SDKM" ]; then yes | "$SDKM" --licenses > /dev/null || true; "$SDKM" "platforms;android-36" > /dev/null || true; fi
 
       - name: Build the app
         working-directory: android-app
@@ -31,7 +35,19 @@ jobs:
           ADMOB_REWARDED_ID: ${{ vars.ADMOB_REWARDED_ID }}
           KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-        run: bash build.sh
+        run: |
+          set -o pipefail
+          bash build.sh 2>&1 | tee build.log
+
+      - name: Show why the build failed
+        if: failure()
+        working-directory: android-app
+        run: |
+          [ -f build.log ] || exit 0
+          msg=$(grep -E "error|Error|ERROR|FAILURE|What went wrong|Could not|failed" build.log | tail -25 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+          echo "::error title=Build failed::${msg}"
+          tail_msg=$(tail -30 build.log | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+          echo "::error title=Last lines::${tail_msg}"
 
       - uses: actions/upload-artifact@v4
         with:
