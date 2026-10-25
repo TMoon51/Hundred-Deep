@@ -159,7 +159,7 @@ for(const[p,col]of IPATH[shape]){x.fillStyle=col;x.fill(p,'evenodd');x.stroke(p)
 const DEXI=[['axe','Axe','Warrior weapon. Each axe you grab lands one crushing blow on your target.'],['dagger','Dagger','Rogue weapon. Each dagger lands 3 quick strikes.'],['orbw','Arcane Orb','Mage weapon. Each orb casts 2 spells.'],
 ['coin','Coin','Gold for upgrades. Every kill drops one coin.'],['pouch','Coin Pouch','Mini-bosses and bosses drop one heavy pouch of gold. Takes more grip space.'],['chest','Chest','Dropped by bosses and mini-bosses. A big haul of gold.'],
 ['flame','Ember','+5% damage for the rest of the run.'],['heart','Heartstone','Heals 25% of your max HP.'],['cleave','Cleave','Warrior skill item. Sweeps every enemy for 70% damage.'],['vial','Venom','Rogue skill item. Poisons a random enemy for 120% damage per stack each round for 3 rounds.'],
-['comet','Fire Orb','Mage skill item. Hits every enemy for 120% damage.'],['star','Ice Orb','Mage skill item. A spell that always freezes its target. Bosses resist.'],['storm','Storm Spike','Mage skill item (Chain Lightning). A bolt hits your target for full damage, then arcs to every other enemy, 20% weaker with each jump.'],['rock','Rock','Junk that takes up grip space, unless Rubble Toss or Volatile Rocks put it to work.'],['bone','Bone','Junk thrown in by Rotters. Counts as a rock for Rubble Toss, but never explodes.'],['magma','Magma Rock','With the Volatile Rocks relic, every rock in the machine smoulders. Each one you grab explodes for 20% damage to every enemy.']];
+['comet','Fire Orb','Mage skill item. Hits every enemy for 120% damage.'],['star','Ice Orb','Mage skill item. A spell that always freezes its target. Bosses resist.'],['storm','Storm Spike','Mage skill item (Chain Lightning). A bolt hits your target for full damage, then arcs to every other enemy, 20% weaker with each jump.'],['rock','Rock','Junk that takes up grip space, unless Rubble Toss or Volatile Rocks put it to work.'],['bone','Bone','Always junk. Some lie in the pile and Rotters throw in more. Rubble Toss and Volatile Rocks ignore them.'],['magma','Magma Rock','With the Volatile Rocks relic, every rock in the machine smoulders. Each one you grab explodes for 20% damage to every enemy.']];
 const DEXHOW=['<b>Your turn</b> Drag to aim the claw, release to drop. It digs into the pile and grabs whatever is in its grip, closest to the middle first, until it is full. Items at the edge can slip.',
 '<b>Combat</b> Grabbed weapons attack the marked enemy (@tri), then poison ticks, then every enemy strikes back. @warn means a boss is winding up a slam.',
 '<b>Floors</b> More enemies every 10 floors. A mini-boss every 5th floor, a boss every 10th, and the god on floor 100.',
@@ -508,7 +508,7 @@ for(const o of c){const ar=Math.PI*o.r*o.r;if(ar>cap)continue;cap-=ar;const d=Ma
 for(const[o,d]of taken){o.edge=d>.75;if(o.edge&&Math.random()<.2)continue;o.h=1;o.dx=o.x-K.x;o.dy=o.y-K.y;o.tdx=o._tx-K.x;o.tdy=o._ty-K.y}}
 function grabSummary(){const m=new Map();let gold=0;for(const[s,v]of K.sum){if(v){gold+=v;continue}const key=s.replace(/!$/,'');m.set(key,(m.get(key)||0)+1)}
 const parts=[...m].map(([k,n])=>n>1?k+' ×'+n:k);if(gold)parts.push('+'+fmt(gold)+' @coin');ft(W/2,HOME+66,parts.length?parts.join(' · '):'Nothing grabbed',parts.length?'#e9e1d3':'#999',14,1.5)}
-function got(o,i){let s,c='#ffd23e';const k=o.k;{const sh=itemShape(o);R.got=R.got||{};R.got[sh]=(R.got[sh]||0)+1}const vol=k=='r'&&o.t!='🦴'&&hasR('vol');sfx(k=='c'||k=='x'?'coin':k=='f'||k=='h'?'gem':k=='r'&&!stats().rb&&!vol?'junk':'pick',i);
+function got(o,i){let s,c='#ffd23e';const k=o.k;{const sh=itemShape(o);R.got=R.got||{};R.got[sh]=(R.got[sh]||0)+1}const vol=k=='r'&&o.t!='🦴'&&hasR('vol');sfx(k=='c'||k=='x'?'coin':k=='f'||k=='h'?'gem':k=='r'&&(o.t=='🦴'||!stats().rb)&&!vol?'junk':'pick',i);
 if(k=='a'){if(K.side<2)R.cg[K.side]=1;for(let j=0;j<CL[S.cls].h;j++)R.hq.push('h');if(hasR('ech')&&Math.random()<.25){R.hq.push('h');s='Echo!'}else s='Attack!';c='#fff'}
 else if(k=='z'){R.hq.push('c');s='Cleave!';c='#ffd23e'}
 else if(k=='fo'){R.hq.push('fo');s='Fireball!';c='#ff8a3e'}
@@ -518,7 +518,7 @@ else if(k=='v'){R.hq.push('v');s='Venom!';c='#7fe05a'}
 else if(k=='c'||k=='x'){const v=o.val*(1+.25*P('pg'))*(hasR('mag')?1.4:1);S.gold+=v;R.gain+=v;s='+'+fmt(v)+' @coin';if(hasR('vam'))heal(stats().max*.02);save()}
 else if(k=='f'){R.atk*=1.05;s='+5% dmg';c='#ff8a3e'}
 else if(k=='h'){heal(stats().max*.25);s='+25% HP';c='#6f6'}
-else if(k=='r'&&(stats().rb||vol)){if(stats().rb)R.hq.push('r');if(vol)R.hq.push('b');s=vol?'Boom!':'Rubble!';c='#d9c39a'}
+else if(k=='r'&&(vol||(stats().rb&&o.t!='🦴'))){if(stats().rb)R.hq.push('r');if(vol)R.hq.push('b');s=vol?'Boom!':'Rubble!';c='#d9c39a'}
 else{s='junk';c='#999'}
 K.sum.push([s,k=='c'||k=='x'?o.val*(1+.25*P('pg'))*(hasR('mag')?1.4:1):0])}
 function clawUpd(dt){phys(dt);const k=K,sp=spdm(),lo=26,hi=W-26;
