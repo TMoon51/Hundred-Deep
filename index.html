@@ -602,7 +602,7 @@ function endTurn(){if(hasR('hov')&&R.state=='play'){const d=stats().max*.02;R.hp
 function upd(dt){if(R&&R.paused)return;if(R&&R.state=='play')R.time=(R.time||0)+dt;if(R&&(R.state=='dying'||R.state=='victory'||(R.state=='dead'&&R.dt!=null))){endUpd(dt);return}if(!R||R.state!='play'){wind(false);return}wind(scr=='game');stepPX(dt);if(R.cine){cineUpd(dt);return}if(Math.random()<dt/7)sfx('drip');if(R.ban.length&&(R.bt+=dt)>2.6){R.ban.shift();R.bt=0}
 for(const e of R.en)if(e&&e.inv&&e.st=='alive'&&!R.en.some(x=>x&&x.st!='dying'&&x.ward===e)&&!R.q.some(q=>q.ward===e)){e.inv=0;ft(e.x,e.y-e.sz/2-30,'@skull Reforms!','#ff6b6b')}shake=Math.max(0,shake-dt);R.sw=Math.max(0,R.sw-dt*4);wupd(dt);
 clawUpd(dt);
-for(const e of R.en){if(!e)continue;if(e.k=='choir')e.ut=R.en.some(o=>o&&o!==e&&o.st=='alive')?1:0;e.fl=Math.max(0,e.fl-dt);e.lg=Math.max(0,e.lg-dt);if(e.an){e.an.t+=dt;if(e.an.ph!='w'&&e.an.t>=e.an.d)e.an=null}
+for(const e of R.en){if(!e)continue;if(e.k=='choir')e.ut=R.en.some(o=>o&&o!==e&&o.st=='alive'&&o.k!='choir')?1:0;e.fl=Math.max(0,e.fl-dt);e.lg=Math.max(0,e.lg-dt);if(e.an){e.an.t+=dt;if(e.an.ph!='w'&&e.an.t>=e.an.d)e.an=null}
 if(e.st=='in'){e.age+=dt;if(e.age>=.35)e.st='alive'}
 else if(e.st=='dying'){e.fade-=dt;if(e.fade<=0){const i=e.i;if(R.q.length){const n=mk(R.q.shift(),i);n.fresh=1;if(R.pend){n.ps=R.pend.ps;n.pt=R.pend.pt;R.pend=null}R.en[i]=n}else R.en[i]=null}}}
 if(R.ph=='atk'){R.ht-=dt;
