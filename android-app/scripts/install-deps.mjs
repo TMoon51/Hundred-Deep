@@ -17,4 +17,4 @@ console.log(`AdMob plugin ${admob.version} needs @capacitor/core ${range} -> usi
 
 run(`npm install --no-audit --no-fund --save ` +
   `@capacitor/core@^${major} @capacitor/android@^${major} @capacitor/cli@^${major} ` +
-  `@capacitor-community/admob@${admob.version} cordova-plugin-purchase@latest`);
+  `@capacitor/haptics@^${major} @capacitor-community/admob@${admob.version} cordova-plugin-purchase@latest`);

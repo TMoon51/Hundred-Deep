@@ -37,6 +37,8 @@ small{color:#a3978a}.tabs{display:flex;gap:8px;margin:10px 0}.t{flex:1}.t.on{bor
 .cc.on{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac) inset,0 0 14px rgba(200,115,42,.25);background:linear-gradient(#2c2117,#1a140f)}
 .stat{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;margin:12px 0 2px;color:#cdbb99;font-size:14px}.stat span{white-space:nowrap}
 .seg{display:flex;gap:4px;margin:16px 0 8px}.seg button{flex:1;padding:9px 2px;font-size:12px;min-width:0}
+#achtoast{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translate(-50%,-140%);z-index:98;background:linear-gradient(#2a2018,#1a140f);border:1px solid #b8913e;border-radius:12px;padding:8px 16px;display:flex;flex-direction:column;align-items:center;min-width:220px;max-width:90vw;text-align:center;transition:transform .35s;box-shadow:0 6px 24px #000a;pointer-events:none}#achtoast.show{transform:translate(-50%,0)}#achtoast small{color:#d4ac58;font-size:11px;letter-spacing:.1em;text-transform:uppercase}#achtoast b{font:700 17px Georgia,serif;color:#f0dfbf}#achtoast span{font-size:12px;color:#a3978a}
+.achl{display:grid;grid-template-columns:1fr 1fr;gap:6px}.ach{background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:7px 9px;opacity:.45;display:flex;flex-direction:column;gap:2px}.ach.on{opacity:1;border-color:#b8913e}.ach b{font-family:Georgia,serif;font-size:13px}.ach small{font-size:11px;line-height:1.25}
 #fakead{position:fixed;inset:0;z-index:99;background:#000;color:#cdbb99;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-family:Georgia,serif}#fakead i{width:160px;height:4px;background:#3a2f25;border-radius:2px;overflow:hidden;position:relative}#fakead i:after{content:'';position:absolute;inset:0;background:#c9a24a;animation:fa 2.2s linear forwards;transform-origin:left}@keyframes fa{from{transform:scaleX(0)}to{transform:scaleX(1)}}.seg button.on{border-color:var(--ac);background:#2a2018;color:#f0dfbf}
 .chain{position:relative;margin-left:14px;padding-left:18px;border-left:2px solid #3b3229}.node{position:relative}.node:before{content:'';position:absolute;left:-26px;top:20px;width:12px;height:12px;border-radius:50%;background:#3b3229;border:2px solid #0e0c0a}
 .node.own:before{background:var(--ac)}.node.next:before{background:#e0b04a;box-shadow:0 0 8px #e0b04a}.node.lock{opacity:.55}
@@ -68,7 +70,7 @@ if(!S.cs){S.cs={};for(const c of CLS)S.cs[c]={gold:S.gold||0,sh:S.sh||0,desc:S.d
 function stash(){S.cs[S.cls]={};for(const f of PF)S.cs[S.cls][f]=S[f]}
 function loadCls(){const d=S.cs[S.cls]||{};S.cb=d.cb||0;S.gold=d.gold||0;S.sh=d.sh||0;S.psh=d.psh||0;S.desc=d.desc||0;S.ab=d.ab||0;S.pu=JSON.parse(JSON.stringify(d.pu||{}));S.sf=d.sf||1}
 S.dex=S.dex||{e:{},m:{},b:{},r:{},g:0};S.st=Object.assign({runs:0,wins:0,kills:0,bosses:0,gold:0,time:0,hit:0,killers:{},relics:{},cr:{},hist:[]},S.st||{});loadCls();
-const saveStr=()=>{stash();S.at=Date.now();return JSON.stringify({cls:S.cls,best:S.best,u:S.u,cs:S.cs,mute:S.mute,nomus:S.nomus,dex:S.dex,st:S.st,run:S.run||null,red:S.red||{},bkr:S.bkr||0,at:S.at,own:S.own,fast:S.fast,mtest:S.mtest})};
+const saveStr=()=>{stash();S.at=Date.now();return JSON.stringify({cls:S.cls,best:S.best,u:S.u,cs:S.cs,mute:S.mute,nomus:S.nomus,dex:S.dex,st:S.st,run:S.run||null,red:S.red||{},bkr:S.bkr||0,at:S.at,own:S.own,fast:S.fast,mtest:S.mtest,hap:S.hap})};
 // never let a stale copy of the game (another tab or window) overwrite a save that is further along; adopt it instead
 let FORCESAVE=0;
 const save=()=>{try{const old=localStorage.getItem('cc2');if(old&&!FORCESAVE){const o=JSON.parse(old);if(progOf(o)>progOf(S)+1){cloudApply(old);return}}localStorage.setItem('cc2',saveStr())}catch(e){}FORCESAVE=0;cloudSoon()};
@@ -123,6 +125,8 @@ function statsPane(){const T=S.st,hm=t=>{const m=Math.round(t/60);return m<60?m+
 const tile=(n,v)=>`<div>${n}<b>${v}</b></div>`;
 let h=`<div class="sg" style="grid-template-columns:1fr 1fr 1fr">${tile('Runs',T.runs)}${tile('Wins',T.wins)}${tile('Play time',hm(T.time))}${tile('Kills',fmt(T.kills))}${tile('Bosses slain',T.bosses)}${tile('Biggest hit',fmt(T.hit))}</div>
 <div class="sg" style="grid-template-columns:1fr">${tile('Gold earned, all time',CI()+fmt(T.gold))}</div>`;
+{const A=(S.st.ach||{}),n=ACH.filter(a=>A[a[0]]).length;h+=`<h3>Achievements · ${n} of ${ACH.length}</h3><div class="achl">${ACH.map(a=>`<div class="ach ${A[a[0]]?'on':''}"><b>${a[1]}</b><small>${a[2]}</small></div>`).join('')}</div>`}
+h+=`<div class="r"><div><b>Vibration</b><br><small>Shakes your phone on hits, slams and deaths</small></div><button onclick="toggleHap()">${S.hap===false?'Off':'On'}</button></div>`;
 h+=`<h3>Classes</h3>`+CLS.map(c=>{const d=c==S.cls?{cb:S.cb,desc:S.desc}:(S.cs[c]||{});return`<div class="r"><div><b>${IC(CICON[c])}${CL[c].n}</b><br><small>${T.cr[c]||0} runs · best floor ${d.cb||0} · ${d.desc||0} descents</small></div></div>`}).join('');
 const top=(o,n)=>Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,n);
 const kl=top(T.killers,5),mx=kl.length?kl[0][1]:1;
@@ -184,9 +188,9 @@ function newRun(){if(S.run&&!S.nr){S.nr=1;menu();return}S.nr=0;S.run=null;save()
 function cont(){const r=S.run;if(!r)return;S.nr=0;if(r.cls!=S.cls){stash();S.cls=r.cls;loadCls()}go(r)}
 function pickSF(f){S.sf=f;save();menu()}
 function pup(k){const p=PU.find(x=>x[0]==k),l=P(k),c=pcost(p,l);if((p[5]&&l>=p[5])||S.sh<c)return;S.sh-=c;S.pu[k]=l+1;save();menu()}
-function descend(){if(S.ab<50)return;if(!S.dc){S.dc=1;menu();return}S.dc=0;S.sh+=shards()+(S.psh||0);S.psh=0;S.desc++;S.gold=400*P('pgo');S.u[S.cls]={sz:0,dmg:0,hp:0,sk:0};S.ab=0;S.sf=Math.min(S.sf,maxSF());save();menu()}
+function descend(){if(S.ab<50)return;if(!S.dc){S.dc=1;menu();return}S.dc=0;S.sh+=shards()+(S.psh||0);S.psh=0;S.desc++;ach('desc');if(S.desc>=5)ach('desc5');S.gold=400*P('pgo');S.u[S.cls]={sz:0,dmg:0,hp:0,sk:0};S.ab=0;S.sf=Math.min(S.sf,maxSF());save();menu()}
 function pick(c){stash();S.cls=c;loadCls();S.dc=0;S.nr=0;save();menu()}
-function up(k){const u=U(S.cls),c=cost(u[k],GRO(k));if(u[k]>=MAXLV(k))return;if(S.gold>=c){S.gold-=c;u[k]++;save();menu()}}
+function up(k){const u=U(S.cls),c=cost(u[k],GRO(k));if(u[k]>=MAXLV(k))return;if(S.gold>=c){S.gold-=c;u[k]++;if((k=='dmg'||k=='hp')&&u[k]>15)ach('limit');save();menu()}}
 function sk(i){const u=U(S.cls);if(u.sk==i&&S.gold>=SC[i]){S.gold-=SC[i];u.sk++;save();menu()}}
 let R,K,FT=[],FX=[],EFX=[],shake=0,scr='menu';
 // how each enemy attacks: m melee swing, b beast pounce, f flyer swoop, c caster bolt, h heavy drop
@@ -445,6 +449,7 @@ if(e.split===0&&e.hp>0&&e.hp<e.max*.5){e.split=1;e.inv=1;ft(e.x,e.y-e.sz/2-30,'@
 function kill(e){if(e.t=='g'){if(e.st!='alive')return;e.st='slain';e.hp=0;R.kills=(R.kills||0)+1;R.bk=(R.bk||0)+1;for(const o of R.en)if(o&&o!==e&&o.st=='alive'){o.st='dying';o.fade=.5}R.q=[];R.hq=[];R.arcs=[];R.cine={k:'die',t:0,d:8.6,f:{},ash:[]};musicStop();sfx('slam');shake=.6;return}
 const s=stats();e.st='dying';e.fade=.5;R.kills=(R.kills||0)+1;if(e.t!='n')R.bk=(R.bk||0)+1;sfx('kill');burst(e.x,e.y,'#ffd23e',14,170);if(s.kh)heal(s.max*s.kh);
 for(const o of K.items)if(o.web===e)o.web=null;
+if(e.t=='b'){const T=S.st;T.bkd=T.bkd||{};const m=R.abyss?'a':'n';T.bkd[m]=T.bkd[m]||{};T.bkd[m][R.L]=1;hap('heavy')}if(R.kills==1)ach('first');
 if(e.k=='bloat'){R.pois.push({d:e.dm*.6,t:3+(CUR('venom')?2:0)});sfx('bubble');ft(e.x,e.y-e.sz/2-30,'@pois It bursts! You are poisoned','#7fe05a')}
 if(e.k=='husk')burn(e,4);
 if(e.k=='carrion'){const o=R.en.find(x=>x&&x!==e&&x.st=='alive'&&x.k=='carrion');if(o&&!o.enraged){o.enraged=1;o.at=2;ft(o.x,o.y-o.sz/2-30,'@burst Frenzied!','#ff5a5a')}}
@@ -462,10 +467,10 @@ if(kind=='h'&&s.ex&&e.hp<e.max*.3){d*=2;tag=' @xmark'}
 if(s.sh&&e.fz){d*=1+s.sh;tag+=' @burst'}
 if(R.fb&&hasR('fst')){R.fb=0;d*=2;tag+=' @fblood'}
 if(s.mk&&e===R.mark)d*=1.25;
-e.hp-=d;e.fl=.12;R.sw=1;if(d>(R.maxHit||0))R.maxHit=d;sfx(S.cls=='warrior'?'thud':S.cls=='rogue'?'slash':'zap');if(c)sfx('crit');burst(e.x,e.y,S.cls=='warrior'?'#ffe0a0':S.cls=='rogue'?'#e8f4ff':'#d9a8ff',c?9:4,c?160:110);ft(e.x+Math.random()*30-15,e.y-e.sz/2-14,fmt(d)+(c?'!':'')+tag,c||tag?'#ffd23e':'#fff');
+e.hp-=d;e.fl=.12;R.sw=1;hap(c?'med':'light');if(d>(R.maxHit||0))R.maxHit=d;sfx(S.cls=='warrior'?'thud':S.cls=='rogue'?'slash':'zap');if(c)sfx('crit');burst(e.x,e.y,S.cls=='warrior'?'#ffe0a0':S.cls=='rogue'?'#e8f4ff':'#d9a8ff',c?9:4,c?160:110);ft(e.x+Math.random()*30-15,e.y-e.sz/2-14,fmt(d)+(c?'!':'')+tag,c||tag?'#ffd23e':'#fff');
 if(kind!='arc'){if(S.cls=='mage'){if(kind=='h')wbolt(e)}else FX.push({k:'s',t:0,m:Math.random()<.5?0:1,tx:e.x,ty:e.y})}if(S.cls=='rogue'&&kind!='arc'&&kind!='r')wstab(c);
 if(e.k=='faceless'&&kind=='h'&&R.state=='play'){const r=e.dm*.25/CL[S.cls].h*(1-s.red);if(hurt(r,'@shield Reflected -',W/2+(e.x-W/2)*.4))return}
-if(s.mn&&kind=='h'&&++R.mana>=20){R.mana-=20;R.hq.push('mt');ft(W/2,90,'@magma METEOR incoming!','#ff8a3e')}
+if(s.mn&&kind=='h'&&++R.mana>=20){R.mana-=20;R.hq.push('mt');ach('meteor');ft(W/2,90,'@magma METEOR incoming!','#ff8a3e')}
 if(s.hh&&kind=='h'){heal(s.max*s.hh);wsiphon(e)}
 if(c&&s.pp)heal(s.max*s.pp);
 if(e.hp>0&&!e.fz&&e.t!='b'&&e.t!='g'&&(kind=='ice'||(s.fr&&Math.random()<s.fr))){e.fz=1;sfx('freeze');ft(e.x,e.y-e.sz/2-30,'@star Frozen!','#9fe0ff')}
@@ -481,7 +486,8 @@ const k=R.lastHit;R.cause=won||left?'':k?(k.name||'Grunt'):R.poisonKill?'Poison'
 {const T=S.st,cs=R.cause||'';T.runs++;if(won)T.wins++;T.kills+=R.kills||0;T.bosses+=R.bk||0;T.gold+=Math.round(R.gain);T.time+=R.time||0;T.hit=Math.max(T.hit,R.maxHit||0);T.cr[S.cls]=(T.cr[S.cls]||0)+1;if(!won&&!left)T.killers[cs]=(T.killers[cs]||0)+1;T.hist.unshift({c:S.cls,f:R.L,k:won?'Victory':left?'Left early':cs,g:Math.round(R.gain),w:won?1:0});T.hist.length=Math.min(T.hist.length,10);save()}
 if(won&&R.abyss){const T=S.st;T.ags=T.ags||{};if(!T.ags[S.cls]){T.ags[S.cls]={t:Date.now(),runs:T.cr[S.cls]||T.runs,time:Math.round(R.time||0)};S.sh+=1500;R.bounty=1500}save()}
 else if(won){const T=S.st;T.vd=1;T.gs=T.gs||{};if(!T.gs[S.cls]){T.gs[S.cls]={t:Date.now(),runs:T.cr[S.cls]||T.runs,time:Math.round(R.time||0)};S.sh+=750;R.bounty=750}save()}
-musicStop();wind(false);if(left){R.state='dead';R.dt=null;R.shown=1;R.left=1;summary();return}if(won){sfx('win')}else{sfx('die');shake=.7;K.snap=1;K.vy=0;K.ph='dead'}}
+{const T=S.st;if(won){ach('god');if(R.abyss)ach('abyssal');if(Object.keys(T.gs||{}).length>=3)ach('god3')}if((T.gold||0)>=1e6)ach('rich');if((T.runs||0)>=100)ach('runs');achTick()}
+if(!won&&!left)hap('death');musicStop();wind(false);if(left){R.state='dead';R.dt=null;R.shown=1;R.left=1;summary();return}if(won){sfx('win')}else{sfx('die');shake=.7;K.snap=1;K.vy=0;K.ph='dead'}}
 function die(){endRun(false)}
 function win(){endRun(true)}
 function endUpd(dt){R.dt+=dt;stepPX(dt);shake=Math.max(0,shake-dt);FT.forEach(f=>{f.t+=dt;f.y-=40*dt});FT=FT.filter(f=>f.t<f.l);
@@ -496,7 +502,7 @@ return `<div class="sg">${live?`<div>Floor<b>${R.L}</b></div><div>Health<b>${Mat
 <div class="sh">Collected this run</div><div class="gl">${got}</div><div class="sh">Relics</div><div class="rls">${rel}</div>${R.abyss?`<div class="sh">Curses</div><div class="rls">${R.cu.length?R.cu.map(k=>`<div class="rl">${IC('skull','rli')}<div><b>${CURSES[k][0]}</b><br><small>${CURSES[k][1]}</small></div></div>`).join(''):'<small>None yet. One more after every boss.</small>'}</div>`:''}`}
 function pause(){if(!R||R.state!='play')return;R.paused=1;R.lq=0;wind(false);sfx('clank');pauseUI()}
 function pauseUI(){$d('#ov').innerHTML=`<div class="sum ps"><h2>Paused</h2><div class="kb">${CL[S.cls].n} · floor ${R.L} of 100${R.abyss?' · Abyss':''}</div>${runStats(1)}
-<div class="snd"><button onclick="pSound('m')">${IC('music')}Music · ${S.nomus||S.mute?'off':'on'}</button><button onclick="pSound('s')">${IC(S.mute?'mute':'sound')}Sound · ${S.mute?'off':'on'}</button></div><button class="go" onclick="resume()">Resume</button><button style="width:100%;margin-top:8px" onclick="leaveRun()">${R.lq?'Tap again to leave · this run will end':'Leave the dungeon'}</button><small style="display:block;margin-top:6px;opacity:.7">Leaving ends the run here. You keep all the gold you've collected.</small></div>`;$d('#ov').hidden=false}
+<div class="snd"><button onclick="toggleHap()">${IC('burst')}Vibration · ${S.hap===false?'off':'on'}</button><button onclick="pSound('m')">${IC('music')}Music · ${S.nomus||S.mute?'off':'on'}</button><button onclick="pSound('s')">${IC(S.mute?'mute':'sound')}Sound · ${S.mute?'off':'on'}</button></div><button class="go" onclick="resume()">Resume</button><button style="width:100%;margin-top:8px" onclick="leaveRun()">${R.lq?'Tap again to leave · this run will end':'Leave the dungeon'}</button><small style="display:block;margin-top:6px;opacity:.7">Leaving ends the run here. You keep all the gold you've collected.</small></div>`;$d('#ov').hidden=false}
 function pSound(k){k=='m'?toggleMusic():toggleMute();pauseUI()}
 function resume(){if(!R)return;R.paused=0;$d('#ov').hidden=true}
 function leaveRun(){if(!R||!R.paused)return;if(!R.lq){R.lq=1;pauseUI();return}$d('#ov').hidden=true;endRun(false,true)}
@@ -618,7 +624,7 @@ function steal(e,n){let c=0;sfx('steal');for(let j=0;j<n;j++){const w=K.items.fi
 function burn(e,n){const free=K.items.filter(o=>!o.h);if(!free.length)return;const y0=free[Math.random()*free.length|0].y,band=free.filter(o=>Math.abs(o.y-y0)<18).sort(()=>Math.random()-.5).slice(0,n);
 for(const o of band)K.items.splice(K.items.indexOf(o),1);FX.push({k:'burn',t:0,y:y0});sfx('burn');shake=.3;ft(e.x,e.y-e.sz/2-30,'@flame Burns '+band.length+' items!','#ff8a3e')}
 function tilt(e){sfx('tilt');const d=Math.random()<.5?-1:1;for(const o of K.items)if(!o.h){o.vx+=d*(380+Math.random()*160);o.vy-=120}shake=.35;ft(e.x,e.y-e.sz/2-30,(d<0?'@arrL':'@arrR')+(e.house?' Shakes the reliquary!':e.em=='bellringer'?' The bell tolls!':' Shakes the machine!'),'#ffb02e')}
-function hurt(d,txt,x){const s=stats();R.hp-=d;sfx(txt.startsWith('@pois')?'bubble':txt.startsWith('SLAM')?'slam':'hurt');if(s.rg)R.rage=Math.min(100,R.rage+d/s.max*200);ft(x,190,txt+fmt(d),'#ff5a5a');
+function hurt(d,txt,x){const s=stats();R.hp-=d;R.fd=(R.fd||0)+d;hap(txt.startsWith('SLAM')?'heavy':'med');sfx(txt.startsWith('@pois')?'bubble':txt.startsWith('SLAM')?'slam':'hurt');if(s.rg)R.rage=Math.min(100,R.rage+d/s.max*200);ft(x,190,txt+fmt(d),'#ff5a5a');
 if(R.hp<=0){if(s.ls&&!R.ls){R.ls=1;R.hp=1;ft(W/2,160,'@shield Last Stand!','#ffd23e')}else if(canRevive()){R.hp=0;offerRevive();return true}else{die();return true}}return false}
 function offerRelic(hd,sub){const pool=Object.keys(RL).filter(k=>!R.rel.includes(k)&&!CURSED.has(k)),cp=R.abyss?Object.keys(RL).filter(k=>!R.rel.includes(k)&&CURSED.has(k)):[],ch=[];if(!pool.length&&!cp.length)return false;if(cp.length)ch.push(cp[Math.random()*cp.length|0]);while(ch.length<3&&pool.length)ch.push(pool.splice(Math.random()*pool.length|0,1)[0]);
 ch.forEach(k=>S.dex.r[k]=1);save();sfx('chime');R.state='relic';$d('#ov').innerHTML=`<h2>${hd||(R.L%10?'Mini-boss':'Boss')+' down!'}</h2><div>${sub||'Choose a relic for this run'}</div>`+ch.map(k=>`<button class="rel${CURSED.has(k)?' crel':''}" onclick="takeRelic('${k}')">${IC(RL[k][0],'rli')}<div><b>${RL[k][1]}</b>${CURSED.has(k)?' <small class="cur">CURSED</small>':''}<br><small>${RL[k][2]}</small></div></button>`).join('');$d('#ov').hidden=false;return true}
@@ -626,12 +632,12 @@ function takeRelic(k){if(!R||R.state!='relic')return;R.rel.push(k);S.st.relics[k
 const HOOK=()=>S.cls=='rogue'&&K.side==1;
 const shadowTurn=()=>S.cls=='rogue'&&stats().sw&&(R.tn+1)%3==0;
 function startAttack(){const s=stats();R.ph='atk';R.ht=.1;R.pz=0;
-if(s.cb){if(R.cg[0]&&R.cg[1]){R.combo=Math.min(5,R.combo+1);ft(W/2,100,'COMBO x'+R.combo,'#ffd23e')}else if(R.combo){wfx('scrape',.6,{n:R.combo});R.combo=0;ft(W/2,100,'Combo lost','#999')}}R.cg=[0,0];
-if(s.rg&&R.rage>=100&&R.hq.includes('h')){R.rage=0;R.rageOn=1;shake=.3;ft(W/2,100,'@flame RAGE! Axes hit everyone','#ff5a3e')}}
+if(s.cb){if(R.cg[0]&&R.cg[1]){R.combo=Math.min(5,R.combo+1);if(R.combo>=5)ach('combo');ft(W/2,100,'COMBO x'+R.combo,'#ffd23e')}else if(R.combo){wfx('scrape',.6,{n:R.combo});R.combo=0;ft(W/2,100,'Combo lost','#999')}}R.cg=[0,0];
+if(s.rg&&R.rage>=100&&R.hq.includes('h')){R.rage=0;R.rageOn=1;ach('rage');shake=.3;ft(W/2,100,'@flame RAGE! Axes hit everyone','#ff5a3e')}}
 function startClaw(){if(K.ph!='aim')bed();if(K.items.filter(o=>o.k=='a'&&!o.h).length<RESTOCK)refill();K.ph='aim';R.ph='claw';K.touch=0}
 function beginTick(){const q=R.en.filter(e=>e&&e.st=='alive'&&e.ps>0);if(!q.length)return false;R.tq=q;R.ph='tk';R.et=.3;return true}
 function afterAttack(){if(!R.tk){R.tk=true;if(beginTick())return}beginEnemy()}
-function endTurn(){if(hasR('hov')&&R.state=='play'){const d=stats().max*.02;R.hp=Math.max(1,R.hp-d);ft(W/2,176,'@cheart -'+fmt(d),'#b0443a',12,1)}for(const e of R.en)if(e)e.fresh=0;R.fb=1;R.rc=0;R.tk=false;R.rageOn=0;R.tn++;K.small=0;if(S.cls=='rogue'){K.side=0;K.x=K.px[0]}startClaw()}
+function endTurn(){achTick();if(hasR('hov')&&R.state=='play'){const d=stats().max*.02;R.hp=Math.max(1,R.hp-d);ft(W/2,176,'@cheart -'+fmt(d),'#b0443a',12,1)}for(const e of R.en)if(e)e.fresh=0;R.fb=1;R.rc=0;R.tk=false;R.rageOn=0;R.tn++;K.small=0;if(S.cls=='rogue'){K.side=0;K.x=K.px[0]}startClaw()}
 function upd(dt){if(R&&R.paused)return;if(R&&R.state=='play')R.time=(R.time||0)+dt;if(R&&(R.state=='dying'||R.state=='victory'||(R.state=='dead'&&R.dt!=null))){endUpd(dt);return}if(!R||R.state!='play'){wind(false);return}wind(scr=='game');stepPX(dt);if(R.cine){cineUpd(dt);return}if(Math.random()<dt/7)sfx('drip');if(R.ban.length&&(R.bt+=dt)>2.6){R.ban.shift();R.bt=0}
 for(const e of R.en)if(e&&e.inv&&e.st=='alive'&&!R.en.some(x=>x&&x.st!='dying'&&x.ward===e)&&!R.q.some(q=>q.ward===e)){e.inv=0;ft(e.x,e.y-e.sz/2-30,'@skull Reforms!','#ff6b6b')}shake=Math.max(0,shake-dt);R.sw=Math.max(0,R.sw-dt*4);wupd(dt);
 clawUpd(dt);
@@ -695,7 +701,7 @@ if(hasR('thn')&&e.st=='alive'){e.hp-=d*.3*takeMul(e);e.fl=.15;afterDmg(e);if(e.h
 R.lastHit=e;R.poisonKill=0;if(hurt(d,sl?'SLAM -':'-',W/2+(e.x-W/2)*.4))return}
 if(sl){R.et=.7;if(e.col){e.exp=1;ft(e.x,e.y-e.sz/2-30,'@burst EXPOSED!','#ffd23e')}}}}}
 else endTurn()}}
-if(R.en.every(e=>!e)&&!R.q.length){R.floorT+=dt;if(R.floorT>.4){if(R.L%10==0&&R.L<100&&R.rf!=R.L){R.rf=R.L;if(offerRelic())return}if(R.L>=100)win();else{R.L++;sfx('clear');if(R.abyss)abyssMile(R.L);if(R.abyss&&R.L%10==1&&R.L>1&&offerCurse()){R.spawnPend=1;return}spawn();R.fresh=true;ckpt()}}}
+if(R.en.every(e=>!e)&&!R.q.length){R.floorT+=dt;if(R.floorT>.4){if(R.L%10==0&&R.L<100&&R.rf!=R.L){R.rf=R.L;if(offerRelic())return}if(R.L>=100)win();else{if(R.L%10==0&&!R.fd)ach('flawless');R.fd=0;R.L++;sfx('clear');hap('light');achTick();if(R.abyss)abyssMile(R.L);if(R.abyss&&R.L%10==1&&R.L>1&&offerCurse()){R.spawnPend=1;return}spawn();R.fresh=true;ckpt()}}}
 FX.forEach(f=>f.t+=dt);FX=FX.filter(f=>f.t<.22);EFX.forEach(f=>f.t+=dt);EFX=EFX.filter(f=>f.t<f.d);FT.forEach(f=>{f.t+=dt;f.y-=40*dt});FT=FT.filter(f=>f.t<f.l)}
 const poly=(p,c)=>{g.fillStyle=c;g.beginPath();g.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)g.lineTo(p[i],p[i+1]);g.fill()};
 const bar=(x,y,w,h,p,c)=>{g.fillStyle='#000a';g.fillRect(x,y,w,h);g.fillStyle=c;g.fillRect(x,y,w*Math.max(0,Math.min(1,p)),h)};
@@ -2270,9 +2276,31 @@ async function adGold(){if(R.adG||!adsOn())return;const ok=await showAd();if(!ok
 function canRevive(){return !R.rv&&(owns('noads')||(NAT?MON.adReady:TEST()))}
 function offerRevive(){R.state='revive';sfx('die');$d('#ov').innerHTML=`<div class="sum"><h2>You are falling…</h2><div class="kb">Floor ${R.L} · once per run</div>
 <button class="go" onclick="revive()">${owns('noads')?'Rise again at 50% HP':'Watch an ad: rise again at 50% HP'}</button><button style="width:100%;margin-top:8px" onclick="giveUp()">Accept death</button></div>`;$d('#ov').hidden=false}
-async function revive(){if(R.state!='revive')return;const ok=await showAd();if(!ok){adFail();return giveUp()}R.rv=1;R.hp=stats().max*.5;R.eq=[];R.pois=[];R.state='play';$d('#ov').hidden=true;sfx('heal');shake=.3;ft(W/2,160,'You rise again','#e8c66a')}
+async function revive(){if(R.state!='revive')return;const ok=await showAd();if(!ok){adFail();return giveUp()}R.rv=1;ach('revive');R.hp=stats().max*.5;R.eq=[];R.pois=[];R.state='play';$d('#ov').hidden=true;sfx('heal');shake=.3;ft(W/2,160,'You rise again','#e8c66a')}
 function giveUp(){if(R.state!='revive')return;$d('#ov').hidden=true;R.rv=1;R.state='play';die()}
 function adFail(){const t=$d('#ov .sum');if(t&&!t.querySelector('.adx'))t.insertAdjacentHTML('beforeend','<small class="adx" style="display:block;margin-top:8px;color:#c98a6a">No ad available right now.</small>')}
+// ---------- vibration ----------
+let HAPT=0;function hap(k){if(S.hap===false)return;const now=performance.now();if(k=='light'&&now-HAPT<70)return;HAPT=now;
+ const H=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.Haptics;
+ try{if(H){if(k=='success')H.notification({type:'SUCCESS'});else if(k=='death')H.vibrate({duration:420});else H.impact({style:k=='heavy'?'HEAVY':k=='med'?'MEDIUM':'LIGHT'})}
+  else if(navigator.vibrate)navigator.vibrate(k=='death'?[120,80,300]:k=='success'?[30,60,30]:k=='heavy'?90:k=='med'?35:12)}catch(e){}}
+function toggleHap(){S.hap=S.hap===false;save();if(S.hap)hap('med');if(R&&R.paused)pauseUI();else menu()}
+// ---------- achievements ----------
+const ACH=[['first','First Blood','Kill your first enemy.'],['d10','Into the Dark','Reach floor 10.'],['d50','Halfway Down','Reach floor 50.'],['god','Godslayer','Slay Vessa, the First God.'],['god3','Three Deaths for a God','Slay Vessa with every class.'],
+ ['bosses','Bane of the Hundred','Defeat all nine bosses of the dungeon.'],['flawless','Untouched','Clear a boss floor without taking any damage.'],['hoard','Hoarder','Carry 6 relics in a single run.'],['hit1','Heavy Hand','Deal 10,000 damage in a single hit.'],['hit2','Overkill','Deal 1,000,000 damage in a single hit.'],
+ ['rage','Berserker','Warrior: unleash Rage.'],['combo','Five-Fold','Rogue: build Combo up to x5.'],['meteor','Starfall','Mage: call down a Meteor.'],['limit','Beyond the Limit','Raise Damage or Health past level 15.'],['desc','Born Again','Descend for the first time.'],['desc5','Cycle of Ash','Descend 5 times with one class.'],
+ ['rich','Midas','Earn 1,000,000 gold in total.'],['runs','Persistent','Play 100 runs.'],['revive','Not Today','Rise again after falling.'],['abyss','Into the Wound','Enter the Abyss.'],['curses','Bearer of Burdens','Carry 5 curses at once.'],['a50','Deeper Still','Reach floor 50 of the Abyss.'],['abosses','Bane of the Abyss','Defeat all nine bosses of the Abyss.'],['abyssal','Abyssal','Slay Vessa at the bottom of the Abyss.']];
+let TOASTT;function ach(id){const T=S.st;T.ach=T.ach||{};if(T.ach[id])return;const a=ACH.find(x=>x[0]==id);if(!a)return;T.ach[id]=Date.now();save();sfx('chime');hap('success');
+ let el=document.getElementById('achtoast');if(!el){el=document.createElement('div');el.id='achtoast';document.body.appendChild(el)}el.innerHTML=`<small>Achievement unlocked</small><b>${a[1]}</b><span>${a[2]}</span>`;el.className='show';clearTimeout(TOASTT);TOASTT=setTimeout(()=>el.className='',3200)}
+function achTick(){if(!R)return;const T=S.st;if((T.kills||0)+(R.kills||0)>=1&&R.kills)ach('first');if(!R.abyss){if(R.L>=10)ach('d10');if(R.L>=50)ach('d50')}else{ach('abyss');if(R.L>=50)ach('a50')}
+ if((R.maxHit||0)>=1e4)ach('hit1');if((R.maxHit||0)>=1e6)ach('hit2');if(R.rel&&R.rel.length>=6)ach('hoard');if(R.cu&&R.cu.length>=5)ach('curses');if(R.combo>=5)ach('combo');
+ const bk=(T.bkd||{})[R.abyss?'a':'n']||{};if(Object.keys(bk).length>=9)ach(R.abyss?'abosses':'bosses')}
+function achRetro(){const T=S.st,A=T.ach=T.ach||{},now=Date.now(),g=id=>{if(!A[id])A[id]=now};
+ if((T.kills||0)>0)g('first');if((S.best||0)>=10)g('d10');if((S.best||0)>=50)g('d50');const gs=Object.keys(T.gs||{}).length;if(gs)g('god');if(gs>=3)g('god3');
+ if(Object.keys(T.ags||{}).length)g('abyssal');const ab=Object.values(T.abest||{});if(ab.length&&Math.max(...ab)>0)g('abyss');if(ab.length&&Math.max(...ab)>=50)g('a50');
+ if((T.hit||0)>=1e4)g('hit1');if((T.hit||0)>=1e6)g('hit2');if((T.gold||0)>=1e6)g('rich');if((T.runs||0)>=100)g('runs');
+ for(const c of CLS){const d=c==S.cls?{desc:S.desc}:(S.cs[c]||{});if((d.desc||0)>=1)g('desc');if((d.desc||0)>=5)g('desc5');const u=S.u[c]||{};if((u.dmg||0)>15||(u.hp||0)>15)g('limit')}}
+achRetro();
 let last=0;function loop(ts){const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(scr=='title'){machineArt();drawTitle(dt)}else if(scr=='game'&&R){upd(dt);if(fastOn()&&R.state=='play'&&!R.paused&&!R.cine&&!(K.ph=='aim'&&R.ph=='claw')){const t=R.time;upd(dt);R.time=t}draw()}requestAnimationFrame(loop)}
 menu();scr='title';$d('#menu').hidden=true;$d('#game').hidden=false;requestAnimationFrame(loop);
 </script><script>
