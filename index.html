@@ -165,7 +165,7 @@ function bkLoad(){const el=$d('#bkin'),v=(el&&el.value||BK.pend||'').trim();BK.m
 const ICONURL={};const CI=()=>`<img class="ci" src="${iconURL('coin')}" alt="gold">`;function iconURL(shape){if(ICONURL[shape])return ICONURL[shape];if(typeof itemSpr=='function')return ICONURL[shape]=itemSpr(shape).toDataURL();const c=document.createElement('canvas');c.width=c.height=80;const x=c.getContext('2d');x.translate(40,40);x.scale(2.4,2.4);x.strokeStyle='#15110d';x.lineWidth=1.4;x.lineJoin='round';
 for(const[p,col]of IPATH[shape]){x.fillStyle=col;x.fill(p,'evenodd');x.stroke(p)}return ICONURL[shape]=c.toDataURL()}
 const DEXI=[['axe','Axe','Warrior weapon. Each axe you grab lands one crushing blow on your target.'],['dagger','Dagger','Rogue weapon. Each dagger lands 3 quick strikes.'],['orbw','Arcane Orb','Mage weapon. Each orb casts 2 spells.'],
-['coin','Coin','Gold for upgrades. Every kill drops one coin.'],['pouch','Coin Pouch','Mini-bosses and bosses drop one heavy pouch of gold. Takes more grip space.'],['chest','Chest','Dropped by bosses and mini-bosses. A big haul of gold.'],
+['coin','Coin','Gold for upgrades. Every kill drops one coin. Three coins touching in the machine fuse into a pouch.'],['pouch','Coin Pouch','Holds the gold of the coins that made it. Mini-bosses and bosses drop one too. Three pouches touching fuse into a chest.'],['chest','Chest','A big haul of gold. Dropped by bosses and mini-bosses, or fused from three pouches.'],
 ['flame','Ember','+5% damage for the rest of the run.'],['heart','Heartstone','Heals 25% of your max HP.'],['cleave','Cleave','Warrior skill item. Sweeps every enemy for 70% damage.'],['vial','Venom','Rogue skill item. Poisons a random enemy for 120% damage per stack each round for 3 rounds.'],
 ['comet','Fire Orb','Mage skill item. Hits every enemy for 120% damage.'],['star','Ice Orb','Mage skill item. A spell that always freezes its target. Bosses resist.'],['storm','Storm Spike','Mage skill item (Chain Lightning). A bolt hits your target for full damage, then arcs to every other enemy, 20% weaker with each jump.'],['rock','Rock','Junk that takes up grip space, unless Rubble Toss or Volatile Rocks put it to work.'],['jskull','Skull','Abyss junk. Heavy, settles deep, never counts for Rubble Toss.'],['shackle','Rusted Shackle','Abyss junk. Never counts for Rubble Toss.'],['pot','Broken Pottery','Abyss junk. Never counts for Rubble Toss.'],['crystal','Soul Crystal','Dropped by Abyss bosses and mini-bosses. Grab it to seal its Soul Shards. Takes more grip space.'],['bone','Bone','Always junk. Some lie in the pile and Rotters throw in more. Rubble Toss and Volatile Rocks ignore them.'],['magma','Magma Rock','With the Volatile Rocks relic, every rock in the machine smoulders. Each one you grab explodes for 20% damage to every enemy.']];
 const DEXHOW=['<b>Your turn</b> Drag to aim the claw, release to drop. It digs into the pile and grabs whatever is in its grip, closest to the middle first, until it is full. Items at the edge can slip.',
@@ -370,7 +370,7 @@ const BOSS={10:{name:'Minotaur',em:'minotaur',hint:'Slams, and attacks twice onc
 50:{name:'Blood Count',em:'🧛',hint:'Drinks your blood. At half HP becomes a bat swarm',ls:1,split:1,mv:['charge'],ev:3},
 60:{name:'Colossus',em:'🗿',hint:'Takes 60% less damage, except right after it slams',col:1,mv:['charge'],ev:2},
 70:{name:'Wyrm',em:'🐉',hint:'Breathes fire across the machine, burning items',mv:['breath','charge'],ev:2,bn:6},
-80:{name:'The Tithe Lord',em:'tithelord',hint:'Shakes the reliquary and takes a tithe of your grabs',house:1,mv:['tilt','skim'],ev:2},
+80:{name:'The Tithe Lord',em:'tithelord',hint:'Turns your weapons and gems in the machine into gold, and takes a tithe of your grabs',house:1,mv:['gild','skim'],ev:2},
 90:{name:'Twin Demons',em:'😈',em2:'👿',hint:'Revive each other unless both die the same turn',twin:1,hp:.65,mv:['charge'],ev:3}};
 const ABOSS={10:{name:'The Chained Minotaur',hint:'Slams, attacks twice below half HP, and its chains yank your claw sideways',mv:['drag','charge'],ev:2,aby:1},
 20:{name:'The Hollow Queen',hint:'Webs your weapons and lays eggs in the machine. Grab them before they hatch',mv:['eggs','web'],ev:2,wn:4,aby:1},
@@ -379,7 +379,7 @@ const ABOSS={10:{name:'The Chained Minotaur',hint:'Slams, attacks twice below ha
 50:{name:'The Bloodless',hint:'Drinks your blood, feasts on you to heal itself, and becomes a bat swarm at half HP',mv:['feast','charge'],ev:2,aby:1},
 60:{name:'The Unmade',hint:'Takes 60% less damage except right after it slams, and buries your weapons in rubble',mv:['cavein','charge'],ev:2,aby:1},
 70:{name:'The Ashen Wyrm',hint:'Burns items in the machine and sets you on fire with ashfire',mv:['breath','inferno','charge'],ev:2,bn:6,aby:1},
-80:{name:'The Last Tithe',hint:'Shakes the reliquary, skims your grabs and takes a tithe of your gold. Kill it to get the gold back',mv:['tilt','tithe','skim'],ev:2,aby:1},
+80:{name:'The Last Tithe',hint:'Turns your weapons and gems into gold, skims your grabs and takes a tithe of your gold. Kill it to get the gold back',mv:['gild','tithe','skim'],ev:2,aby:1},
 90:{name:'The Severed Twins',hint:'Revive each other unless both die the same turn, and break your guard so your damage reduction fails',mv:['sunder','charge'],ev:3,aby:1}};
 const MINI={5:{name:'Executioner',em:'executioner',hint:'Winds up @warn a beheading blow',mv:['charge'],ev:3},
 15:{name:'Silk Hag',em:'silkhag',hint:'Webs items in the machine for 2 turns',mv:['web'],ev:2,wn:2},
@@ -634,7 +634,16 @@ const shadowTurn=()=>S.cls=='rogue'&&stats().sw&&(R.tn+1)%3==0;
 function startAttack(){const s=stats();R.ph='atk';R.ht=.1;R.pz=0;
 if(s.cb){if(R.cg[0]&&R.cg[1]){R.combo=Math.min(5,R.combo+1);if(R.combo>=5)ach('combo');ft(W/2,100,'COMBO x'+R.combo,'#ffd23e')}else if(R.combo){wfx('scrape',.6,{n:R.combo});R.combo=0;ft(W/2,100,'Combo lost','#999')}}R.cg=[0,0];
 if(s.rg&&R.rage>=100&&R.hq.includes('h')){R.rage=0;R.rageOn=1;ach('rage');shake=.3;ft(W/2,100,'@flame RAGE! Axes hit everyone','#ff5a3e')}}
-function startClaw(){if(K.ph!='aim')bed();if(K.items.filter(o=>o.k=='a'&&!o.h).length<RESTOCK)refill();K.ph='aim';R.ph='claw';K.touch=0}
+function mergeGold(){let any=0;
+ const pass=(pick,make)=>{const L=K.items.filter(o=>!o.h&&!o.web&&pick(o)),par=L.map((_,i)=>i),f=i=>par[i]==i?i:(par[i]=f(par[i]));
+  for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++){const a=L[i],b=L[j];if(Math.hypot(a.x-b.x,a.y-b.y)<a.r+b.r+9)par[f(i)]=f(j)}
+  const G={};L.forEach((o,i)=>(G[f(i)]=G[f(i)]||[]).push(o));
+  for(const g of Object.values(G)){if(g.length<3)continue;any=1;let x=0,y=0,v=0;for(const o of g){x+=o.x;y+=o.y;v+=o.val||0;K.items.splice(K.items.indexOf(o),1)}x/=g.length;y/=g.length;
+   const n=make(v);n.x=x;n.y=y;n.vx=0;n.vy=0;n.rot=.3*(Math.random()-.5);K.items.push(n);burst(x,y,'#e8c66a',8,90)}};
+ pass(o=>o.k=='c'&&o.t!='💰',v=>({k:'c',t:'💰',r:16,val:v}));
+ pass(o=>o.k=='c'&&o.t=='💰',v=>({k:'x',t:'🎁',r:18,val:v}));
+ if(any)sfx('coin')}
+function startClaw(){mergeGold();if(K.ph!='aim')bed();if(K.items.filter(o=>o.k=='a'&&!o.h).length<RESTOCK)refill();K.ph='aim';R.ph='claw';K.touch=0}
 function beginTick(){const q=R.en.filter(e=>e&&e.st=='alive'&&e.ps>0);if(!q.length)return false;R.tq=q;R.ph='tk';R.et=.3;return true}
 function afterAttack(){if(!R.tk){R.tk=true;if(beginTick())return}beginEnemy()}
 function endTurn(){achTick();if(hasR('hov')&&R.state=='play'){const d=stats().max*.02;R.hp=Math.max(1,R.hp-d);ft(W/2,176,'@cheart -'+fmt(d),'#b0443a',12,1)}for(const e of R.en)if(e)e.fresh=0;R.fb=1;R.rc=0;R.tk=false;R.rageOn=0;R.tn++;K.small=0;if(S.cls=='rogue'){K.side=0;K.x=K.px[0]}startClaw()}
@@ -673,6 +682,8 @@ else if(k=='junk'){for(let j=0;j<2;j++)add('r','🦴',13,0);ft(e.x,e.y-e.sz/2-30
 else if(k=='poison'){R.pois.push({d:e.dm*.4,t:CUR('venom')?5:3});ft(e.x,e.y-e.sz/2-30,'@pois Poisons you','#7fe05a');R.et=.5}
 else if(k=='breath'){burn(e,e.bn);R.et=.8}
 else if(k=='tilt'){tilt(e);R.et=.8}
+else if(k=='gild'){const L=R.L,v=Math.ceil(1.5*Math.pow(1.06,L))*Math.min(3+(L/10|0),8),its=K.items.filter(o=>!o.h&&!o.web&&(isWpn(o)||o.k=='f'||o.k=='h')).sort(()=>Math.random()-.5).slice(0,R.abyss?5:4);
+ for(const o of its){o.k='c';o.t='🪙';o.r=13;o.val=Math.round(v*.5);burst(o.x,o.y,'#e8c66a',6,80)}sfx('coin');shake=.2;ft(e.x,e.y-e.sz/2-30,its.length?'Gilds '+its.length+' of your items into gold!':'Finds nothing to gild','#ffd23e');R.et=.8}
 else if(k=='drain'){const s=stats();if(Math.random()<s.dod){sfx('whiff');ft(e.x,e.y,'Dodge!','#7fe')}else{const d=e.dm*(1-s.red),h=e.max*.05;e.hp=Math.min(e.max,e.hp+h);R.lastHit=e;R.poisonKill=0;shake=.15;if(hurt(d,'@blood Drained -',W/2+(e.x-W/2)*.4))return}R.et=.6}
 else if(k=='bury'){const w=K.items.filter(o=>!o.h&&isWpn(o)).sort(()=>Math.random()-.5).slice(0,3);for(const o of w){const jt=Math.random()<.5?'🦴':'💀';K.items.push({k:'r',t:jt,r:jt=='💀'?14:13,val:0,rot:2*(Math.random()-.5),x:o.x+(Math.random()-.5)*6,y:o.y-o.r-12,vx:0,vy:60})}sfx('drop');ft(e.x,e.y-e.sz/2-30,'@skull Buries '+w.length+(w.length==1?' weapon':' weapons'),'#c8bfa6',14,1.2);R.et=.7}
 else if(k=='sing'){const al=R.en.filter(o=>o&&o!==e&&o.st=='alive');for(const o of al)o.dm*=1.08;if(al.length)ft(e.x,e.y-e.sz/2-30,'@horn The choir sings · enemies +8% damage','#c8ccd4',13,1.2);R.et=.6}
