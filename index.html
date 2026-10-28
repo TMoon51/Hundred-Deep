@@ -351,7 +351,13 @@ leech:{from:4,abyss:1,em:'leech',name:'Leech',hint:'Drains you every turn and he
 gravedigger:{from:8,abyss:1,em:'gravedigger',name:'Gravedigger',hint:'Shovels bones and skulls over your weapons',hp:1.1,dm:.7,mv:['bury'],ev:2},
 faceless:{from:15,abyss:1,em:'faceless',name:'The Faceless',hint:'Its mirror throws back part of every weapon hit. Skill items are safe',hp:1.3,dm:.9},
 choir:{from:25,abyss:1,em:'choir',name:'Choir of Ash',hint:'Untouchable while others stand. Its hymn makes them hit harder every turn',hp:.9,dm:.3,mv:['sing'],ev:1},
-shade:{abyss:1,em:'👻',name:'Shade',hint:'What a Hollowed leaves behind when it dies. Weak, but it still bites',hp:.22,dm:.35,sz:.6}};
+shade:{abyss:1,em:'👻',name:'Shade',hint:'What a Hollowed leaves behind when it dies. Weak, but it still bites',hp:.22,dm:.35,sz:.6},
+carrion:{from:2,abyss:1,em:'🐺',name:'Carrion Hound',hint:'Hunts in pairs. When one dies, the other goes into a frenzy and attacks twice',hp:.6,dm:.65},
+bloat:{from:6,abyss:1,em:'🧟',name:'Bloated Corpse',hint:'Bursts when it dies and poisons you',hp:1.2,dm:.6},
+wraith:{from:12,abyss:1,em:'👻',name:'Chain Wraith',hint:'Its chains yank your claw sideways',hp:.85,dm:.7,mv:['drag'],ev:2},
+husk:{from:18,abyss:1,em:'gargoyle',name:'Cinder Husk',hint:'Crumbles into embers when it dies, burning items in the machine',hp:1,dm:.8},
+mourner:{from:28,abyss:1,em:'🧙',name:'Wax Mourner',hint:'While it stands, your healing is cut in half',hp:.9,dm:.6,blight:1},
+penitent:{from:38,abyss:1,em:'zealot',name:'The Penitent',hint:'Scourges itself every turn and hits harder each time. Kill it fast',hp:1.1,dm:.55,mv:['penance'],ev:1}};
 const BOSS={10:{name:'Minotaur',em:'minotaur',hint:'Slams, and attacks twice once below half HP',mv:['charge'],ev:3,enrage:1},
 20:{name:'Brood Mother',em:'broodmother',hint:'Webs your weapons for 2 turns and hatches spiderlings',mv:['web','summon'],ev:2,wn:3,sk:['swarm','🕷️']},
 30:{name:'Rat King',em:'ratking',hint:'Steals 2 weapons a turn. Kill him to get them back',pre:'steal',sn:2,mv:['charge'],ev:3},
@@ -402,7 +408,7 @@ function spawn(){const L=R.L,god=L==100,n=god?1:2+((L-1)/10|0)+(CUR('horde')?1:0
 const bs=L%10==0?(R.abyss&&ABOSS[L]?Object.assign({},BOSS[L],ABOSS[L]):BOSS[L]):null,ms=L%5==0&&!bs?MINI[L]:null,big=bs||ms,bt=bs?'b':'m';
 if(god)sp.push({t:'g',o:1000,sp:GOD});
 else{if(big){sp.push({t:bt,o:1000,sp:big,em:big.em});nb=1;if(big.twin){sp.push({t:bt,o:1001,sp:big,em:big.em2});nb=2}}
-for(let i=0;i<n-nb;i++){const k=pickKind(L);for(let j=0;j<(k=='swarm'?3:1);j++)sp.push({t:'n',k,o:o++})}}
+for(let i=0;i<n-nb;i++){const k=pickKind(L);for(let j=0;j<(k=='swarm'?3:k=='carrion'?2:1);j++)sp.push({t:'n',k,o:o++})}}
 R.vis=god?3:Math.min(5,sp.length);R.fb=1;R.brace=1;R.mark=null;R.twd=null;R.skim=0;const first=sp.splice(0,R.vis);R.q=sp;
 const bi=first.findIndex(s=>s.t!='n'),solo=bi>=0&&!first[bi].sp.twin;R.lay=solo?BLAY[R.vis]:null;if(solo){const c=BCEN[R.vis];[first[bi],first[c]]=[first[c],first[bi]]}
 else if(bi>=0){const tw=first.filter(x=>x.t!='n').slice(0,2),sl={2:[0,1],3:[0,2],4:[1,2],5:[1,3]}[R.vis]||[0,1];tw.forEach((o,n)=>{const x=first.indexOf(o),t=sl[n];[first[x],first[t]]=[first[t],first[x]]})}
@@ -438,6 +444,9 @@ if(e.split===0&&e.hp>0&&e.hp<e.max*.5){e.split=1;e.inv=1;ft(e.x,e.y-e.sz/2-30,'@
 function kill(e){if(e.t=='g'){if(e.st!='alive')return;e.st='slain';e.hp=0;R.kills=(R.kills||0)+1;R.bk=(R.bk||0)+1;for(const o of R.en)if(o&&o!==e&&o.st=='alive'){o.st='dying';o.fade=.5}R.q=[];R.hq=[];R.arcs=[];R.cine={k:'die',t:0,d:8.6,f:{},ash:[]};musicStop();sfx('slam');shake=.6;return}
 const s=stats();e.st='dying';e.fade=.5;R.kills=(R.kills||0)+1;if(e.t!='n')R.bk=(R.bk||0)+1;sfx('kill');burst(e.x,e.y,'#ffd23e',14,170);if(s.kh)heal(s.max*s.kh);
 for(const o of K.items)if(o.web===e)o.web=null;
+if(e.k=='bloat'){R.pois.push({d:e.dm*.6,t:3+(CUR('venom')?2:0)});sfx('bubble');ft(e.x,e.y-e.sz/2-30,'@pois It bursts! You are poisoned','#7fe05a')}
+if(e.k=='husk')burn(e,4);
+if(e.k=='carrion'){const o=R.en.find(x=>x&&x!==e&&x.st=='alive'&&x.k=='carrion');if(o&&!o.enraged){o.enraged=1;o.at=2;ft(o.x,o.y-o.sz/2-30,'@burst Frenzied!','#ff5a5a')}}
 if(e.k=='leech'){const n=R.en.filter(o=>o&&o!==e&&o.st=='alive').sort((a,b)=>Math.hypot(a.x-e.x,a.y-e.y)-Math.hypot(b.x-e.x,b.y-e.y))[0];if(n){const h=n.max*.15;n.hp=Math.min(n.max,n.hp+h);ft(n.x,n.y-n.sz/2-30,'@blood Fed +'+fmt(h),'#ff6b6b')}}
 if(e.hol){for(let j=0;j<2;j++){const s2={t:'n',k:'shade',em:'👻',o:100+(++R.so)},i=R.en.findIndex((x,jj)=>jj<R.vis&&(!x||x===e));if(i>=0&&R.en[i]!==e){const n=mk(s2,i);n.fresh=1;R.en[i]=n}else R.q.unshift(s2)}ft(e.x,e.y-e.sz/2-30,'It splits into shades!','#c8ccd4')}
 if(e.tithe){S.gold+=e.tithe;R.gain+=e.tithe;ft(e.x,e.y-20,'Your tithe returns!','#ffd23e');e.tithe=0}
@@ -665,6 +674,7 @@ else if(k=='raise'){const done=R.en.filter(o=>o&&o.t=='b').map(o=>o.em),opts=[10
 else if(k=='grasp'){const w=K.items.filter(o=>!o.h&&isWpn(o)).sort(()=>Math.random()-.5).slice(0,3);for(const o of w)K.items.splice(K.items.indexOf(o),1);sfx('steal');shake=.3;ft(e.x,e.y-e.sz/2-30,'@claw The hundred hands crush '+w.length+(w.length==1?' weapon':' weapons'),'#ffb02e',14,1.3);R.et=.9}
 else if(k=='hymn'){const h=e.max*.05;e.hp=Math.min(e.max,e.hp+h);summon(e,['grunt','zealot']);ft(e.x,e.y-e.sz/2-30,'@heal Hymn of the Deep · '+fmt(h),'#c9a050',14,1.3);R.et=.9}
 else if(k=='gaze'){const s=stats();EFX.push({k:'gaze',x:e.x,y:84,t:0,d:.7});if(Math.random()<s.dod){sfx('whiff');ft(W/2,170,'Dodged her gaze!','#7fe')}else{const d=e.dm*2.2*(1-s.red);shake=.45;R.lastHit=e;R.poisonKill=0;if(hurt(d,'@burst The eye burns -',W/2))return}R.et=.9}
+else if(k=='penance'){e.hp=Math.max(1,e.hp-e.max*.08);e.dm*=1.25;e.fl=.15;sfx('hurt');ft(e.x,e.y-e.sz/2-30,'Scourges itself · hits harder','#ff7a4a');R.eq.unshift({e,k:'hit'});R.et=.4}
 else if(k=='drag'){R.drag=1;sfx('clank');ft(e.x,e.y-e.sz/2-30,'@chain Its chains snag your claw','#ffb02e');R.et=.6}
 else if(k=='eggs'){for(let j=0;j<3;j++){add('r','🥚',13,0);K.items[K.items.length-1].egg=2}sfx('bubble');ft(e.x,e.y-e.sz/2-30,'Lays eggs in the machine','#c8ccd4');R.et=.6}
 else if(k=='gnaw'){const cs=K.items.filter(o=>o.k=='c'&&!o.h);for(const o of cs)K.items.splice(K.items.indexOf(o),1);const h=e.max*.04*cs.length;e.hp=Math.min(e.max,e.hp+h);sfx('steal');ft(e.x,e.y-e.sz/2-30,cs.length?'Gnaws '+cs.length+' coins · +'+fmt(h):'Finds no coins to gnaw','#ffb02e');R.et=.6}
