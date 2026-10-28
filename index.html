@@ -174,7 +174,7 @@ function dexPane(){const D=S.dex,card=(ic,name,desc,known)=>known?`<div class="d
 let body='';
 if(DTAB=='items')body=`<div class="dex">${DEXI.map(([sh,n,d])=>card(`<img src="${iconURL(sh)}" alt="">`,n,d,1)).join('')}</div>`;
 else if(DTAB=='enemies')body=`<div class="dex">${Object.keys(NT).map(k=>{const t=NT[k];return card(beastIcon(t.em||'👹'),t.name+(t.abyss?' · Abyss':'')+(t.from?` · floor ${t.from}+`:''),k=='grunt'?'Ogres, hounds, cutthroats, zealots and gargoyles: the temple\'s rank and file. Hits once a turn.':t.hint+'.',D.e[k])}).join('')}</div>`;
-else if(DTAB=='bosses')body=`<div class="dex">${[...Object.keys(MINI),...Object.keys(BOSS)].map(Number).sort((a,b)=>a-b).map(L=>L%10?card(beastIcon(MINI[L].em),`${MINI[L].name} · mini-boss, floor ${L}`,MINI[L].hint+'.',D.m[L]):card(beastIcon(BOSS[L].em),`${BOSS[L].name} · boss, floor ${L}`,BOSS[L].hint+'.',D.b[L])).join('')}${card(beastIcon('👁️'),'Vessa, the First God · floor 100',GOD.hint+'. The end of the descent.'+(Object.keys(S.st.gs||{}).length?` <span style="color:#d0a850">Slain by: ${Object.keys(S.st.gs).map(k=>CL[k].n).join(', ')}</span>`:''),D.g)}</div>`;
+else if(DTAB=='bosses')body=`<div class="dex">${[...Object.keys(MINI),...Object.keys(BOSS)].map(Number).sort((a,b)=>a-b).map(L=>L%10?card(beastIcon(MINI[L].em),`${MINI[L].name} · mini-boss, floor ${L}`,MINI[L].hint+'.',D.m[L]):card(beastIcon(BOSS[L].em),`${BOSS[L].name} · boss, floor ${L}`,BOSS[L].hint+'.',D.b[L])).join('')}${card(beastIcon('👁️'),'Vessa, the First God · floor 100',GOD.hint+'. The end of the descent.'+(Object.keys(S.st.gs||{}).length?` <span style="color:#d0a850">Slain by: ${Object.keys(S.st.gs).map(k=>CL[k].n).join(', ')}</span>`:''),D.g)}</div>${Object.keys(ABOSS).some(L=>(D.ab||{})[L])?`<h3>Bosses of the Abyss</h3><div class="dex">${Object.keys(ABOSS).map(L=>card(beastIcon(BOSS[L].em),`${ABOSS[L].name} · Abyss, floor ${L}`,ABOSS[L].hint+'.',(D.ab||{})[L])).join('')}</div>`:''}`;
 else if(DTAB=='relics')body=`<div class="dex">${Object.keys(RL).map(k=>card(IC(RL[k][0],'di'),RL[k][1],RL[k][2],D.r[k])).join('')}</div>`;
 else body=DEXHOW.map(t=>`<div class="r"><small style="color:#d6c7a8">${TI(t)}</small></div>`).join('');
 const found=Object.keys(D.e).length+Object.keys(D.m).length+Object.keys(D.b).length+(D.g?1:0)+Object.keys(D.r).length,total=Object.keys(NT).length+Object.keys(MINI).length+Object.keys(BOSS).length+1+Object.keys(RL).length;
@@ -325,7 +325,7 @@ if(c=='warrior'){if(k>1)red=.25;if(k>2)kh=.05;if(k>3)rb=.25;if(k>4)ex=1;if(k>5)l
 if(c=='rogue'){if(k>0)crit=.3;if(k>1)dod=.25;if(k>3)pp=.03;if(k>4)rip=1;if(k>5)pl=1;if(k>6)mk=1;if(k>7){cb=1;dm*=1+.1*(R.combo||0)}if(k>8)sw=1}
 if(c=='mage'){if(k>0)fr=.2;if(k>1)red=.25;if(k>2)hh=.025;if(k>4)sh=.5;if(k>5)gw=1;if(k>6)mn=1;if(k>7)el=1;if(k>8)rc=1}
 dm*=1+.25*P('pdm');if(hasR('hov'))dm*=1.5;if(hasR('bul'))red=1-(1-red)*.8;if(hasR('luk'))crit+=.15;crit+=.04*P('pcr');if(hasR('frz'))fr+=.12;
-return{dm,crit,red,dod,kh,hh,fr,rb,ex,ls,pp,rip,pl,ch,sh,gw,rg,gs,br,mk,cb,sw,mn,el,rc,max:100*Math.pow(1.15,u.hp)*(1+.25*P('php'))*(hasR('hrt')?1.2:1)*(hasR('gcr')?.7:1)}}
+if(R&&R.sund>0)red=0;return{dm,crit,red,dod,kh,hh,fr,rb,ex,ls,pp,rip,pl,ch,sh,gw,rg,gs,br,mk,cb,sw,mn,el,rc,max:100*Math.pow(1.15,u.hp)*(1+.25*P('php'))*(hasR('hrt')?1.2:1)*(hasR('gcr')?.7:1)}}
 const RUNF=['rv','abyss','cu','sg','L','hp','rel','atk','rage','mana','combo','ls','gain','kills','bk','time','turns','tn','maxHit','seen','rf','got'];
 function ckpt(){if(!R||R.state=='dying'||R.state=='dead'||R.state=='victory')return;const r={cls:S.cls};for(const k of RUNF)r[k]=R[k];S.run=JSON.parse(JSON.stringify(r));save()}
 function go(res){WFX=[];WA={k:'',t:0,d:0};R={pois:[],ban:[],bt:0,seen:{},skim:0,twd:null,rage:0,rageOn:0,brace:1,mark:null,combo:0,cg:[0,0],tn:0,mana:0,L:Math.min(S.sf||1,SFMAX()),rel:[],fb:1,rf:0,so:0,hp:1,atk:1,spd:1,gain:0,state:'play',sw:0,fl:0,hq:[],tk:false,rc:0,ph:'claw',ht:0,pz:0,eq:[],et:0,fresh:false,turns:0,en:[],q:[],vis:1,floorT:0,ls:0,pend:null,abyss:abyssOn(),cu:[],sg:0};R.hp=stats().max;if(res&&res.L)for(const k of RUNF)if(res[k]!=null)R[k]=JSON.parse(JSON.stringify(res[k]));
@@ -361,6 +361,15 @@ const BOSS={10:{name:'Minotaur',em:'minotaur',hint:'Slams, and attacks twice onc
 70:{name:'Wyrm',em:'🐉',hint:'Breathes fire across the machine, burning items',mv:['breath','charge'],ev:2,bn:6},
 80:{name:'The Tithe Lord',em:'tithelord',hint:'Shakes the reliquary and takes a tithe of your grabs',house:1,mv:['tilt','skim'],ev:2},
 90:{name:'Twin Demons',em:'😈',em2:'👿',hint:'Revive each other unless both die the same turn',twin:1,hp:.65,mv:['charge'],ev:3}};
+const ABOSS={10:{name:'The Chained Minotaur',hint:'Slams, attacks twice below half HP, and its chains yank your claw sideways',mv:['drag','charge'],ev:2,aby:1},
+20:{name:'The Hollow Queen',hint:'Webs your weapons and lays eggs in the machine. Grab them before they hatch',mv:['eggs','web'],ev:2,wn:4,aby:1},
+30:{name:'The Rat God',hint:'Steals 2 weapons a turn and gnaws the coins in the machine to heal. Kill him to get the weapons back',mv:['gnaw','charge'],ev:2,aby:1},
+40:{name:'The Pestilence',hint:'Poisons you every turn, halves your healing, and rots your weapons into bone',mv:['rot','summon'],ev:2,aby:1},
+50:{name:'The Bloodless',hint:'Drinks your blood, feasts on you to heal itself, and becomes a bat swarm at half HP',mv:['feast','charge'],ev:2,aby:1},
+60:{name:'The Unmade',hint:'Takes 60% less damage except right after it slams, and buries your weapons in rubble',mv:['cavein','charge'],ev:2,aby:1},
+70:{name:'The Ashen Wyrm',hint:'Burns items in the machine and sets you on fire with ashfire',mv:['breath','inferno','charge'],ev:2,bn:6,aby:1},
+80:{name:'The Last Tithe',hint:'Shakes the reliquary, skims your grabs and takes a tithe of your gold. Kill it to get the gold back',mv:['tilt','tithe','skim'],ev:2,aby:1},
+90:{name:'The Severed Twins',hint:'Revive each other unless both die the same turn, and break your guard so your damage reduction fails',mv:['sunder','charge'],ev:3,aby:1}};
 const MINI={5:{name:'Executioner',em:'executioner',hint:'Winds up @warn a beheading blow',mv:['charge'],ev:3},
 15:{name:'Silk Hag',em:'silkhag',hint:'Webs items in the machine for 2 turns',mv:['web'],ev:2,wn:2},
 25:{name:'Grave Robber',em:'graverobber',hint:'Steals a weapon every turn',pre:'steal',sn:1},
@@ -380,17 +389,17 @@ const ADEP=()=>1+R.L/100,AHP=()=>Math.pow(1.12,Math.max(0,U(S.cls).dmg-15)),ADM=
 function mk(s,i){const L=R.L,t=s.t,a=(R.lay||LAY[R.vis])[i],sp=s.sp||(t=='n'?NT[s.k||'grunt']:{}),G=k=>sp[k];
 const hp=BASEHP*Math.pow(HPG,Math.min(L,60)-1)*Math.pow(1.14,Math.max(0,L-60))*HPM[t]*(G('hp')||1)*(R.abyss?1.6*ADEP()*AHP()*(CUR('hide')?1.2:1):1)*(hasR('abl')&&t!='n'?1.25:1),dm=4*Math.pow(1.07,L-1)*DMM[t]*(G('dm')||1)*(R.abyss?1.9*ADEP()*ADM()*(CUR('fury')?1.15:1):1);
 const em=s.em||G('em')||EM[(L+s.o)%EM.length];
-{const D=S.dex,was=JSON.stringify(D);if(t=='n')D.e[s.k||'grunt']=1;else if(t=='m')D.m[L]=1;else if(t=='b')D.b[L]=1;else D.g=1;if(JSON.stringify(D)!=was)save()}
+{const D=S.dex,was=JSON.stringify(D);if(t=='n')D.e[s.k||'grunt']=1;else if(t=='m')D.m[L]=1;else if(t=='b'){D.b[L]=1;if(G('aby')){D.ab=D.ab||{};D.ab[L]=1}}else D.g=1;if(JSON.stringify(D)!=was)save()}
 if(t!='n'&&t!='g'&&!R.seen['b'+L]){R.seen['b'+L]=1;banner((t=='m'?'MINI-BOSS · ':t=='g'?'':'BOSS · ')+sp.name,sp.hint,1)}
 else if(t=='n'&&s.k&&s.k!='grunt'&&!s.ward&&!R.seen[s.k]){R.seen[s.k]=1;banner('NEW · '+sp.name,sp.hint)}
 const elt=R.abyss&&(t=='n'||t=='m'||t=='b')&&s.k!='shade'&&!s.ward&&Math.random()<.33?ELK[Math.random()*ELK.length|0]:null,hol=elt=='hol';
 return{hol,el:elt,t,o:s.o,i,hp:hp*(elt?1.15:1),max:hp*(elt?1.15:1),dm,at:G('at')||ATK[t],mv:G('mv')||null,ev:G('ev')||3,sm:G('sm')||3,pre:s.ward?'feed':G('pre')||null,turn:0,chg:0,
-k:s.k||null,name:(elt?ELN[elt]+' ':'')+((t=='n'&&(s.k||'grunt')=='grunt'&&GN[em])||sp.name),light:G('light'),dodge:G('dodge'),col:G('col'),lsteal:G('ls'),split:G('split')?0:null,enr:G('enrage')||elt=='fre',blight:G('blight'),house:G('house'),twin:G('twin'),ward:s.ward||null,
+k:s.k||null,name:(elt?ELN[elt]+' ':'')+((t=='n'&&(s.k||'grunt')=='grunt'&&GN[em])||sp.name),light:G('light'),dodge:G('dodge'),col:G('col'),lsteal:G('ls'),split:G('split')?0:null,enr:G('enrage')||elt=='fre',blight:G('blight'),house:G('house'),twin:G('twin'),aby:G('aby'),ward:s.ward||null,
 wn:G('wn')||2,sn:G('sn')||1,bn:G('bn')||4,sk:G('sk'),spec:s,loot:0,inv:0,exp:0,
 em,x:a[0],y:a[1],sz:90*a[2]*SZM[t]*(G('sz')||1),st:'in',age:0,fade:0,fl:0,lg:0,fresh:0,fz:0}}
 function pickKind(L){const pool=Object.keys(NT).filter(k=>NT[k].from&&NT[k].from<=L&&(!NT[k].abyss||R.abyss));return(!pool.length||Math.random()<.35)?'grunt':pool[Math.random()*pool.length|0]}
 function spawn(){const L=R.L,god=L==100,n=god?1:2+((L-1)/10|0)+(CUR('horde')?1:0),sp=[];let o=0,nb=0;
-const bs=L%10==0?BOSS[L]:null,ms=L%5==0&&!bs?MINI[L]:null,big=bs||ms,bt=bs?'b':'m';
+const bs=L%10==0?(R.abyss&&ABOSS[L]?Object.assign({},BOSS[L],ABOSS[L]):BOSS[L]):null,ms=L%5==0&&!bs?MINI[L]:null,big=bs||ms,bt=bs?'b':'m';
 if(god)sp.push({t:'g',o:1000,sp:GOD});
 else{if(big){sp.push({t:bt,o:1000,sp:big,em:big.em});nb=1;if(big.twin){sp.push({t:bt,o:1001,sp:big,em:big.em2});nb=2}}
 for(let i=0;i<n-nb;i++){const k=pickKind(L);for(let j=0;j<(k=='swarm'?3:1);j++)sp.push({t:'n',k,o:o++})}}
@@ -431,6 +440,7 @@ const s=stats();e.st='dying';e.fade=.5;R.kills=(R.kills||0)+1;if(e.t!='n')R.bk=(
 for(const o of K.items)if(o.web===e)o.web=null;
 if(e.k=='leech'){const n=R.en.filter(o=>o&&o!==e&&o.st=='alive').sort((a,b)=>Math.hypot(a.x-e.x,a.y-e.y)-Math.hypot(b.x-e.x,b.y-e.y))[0];if(n){const h=n.max*.15;n.hp=Math.min(n.max,n.hp+h);ft(n.x,n.y-n.sz/2-30,'@blood Fed +'+fmt(h),'#ff6b6b')}}
 if(e.hol){for(let j=0;j<2;j++){const s2={t:'n',k:'shade',em:'👻',o:100+(++R.so)},i=R.en.findIndex((x,jj)=>jj<R.vis&&(!x||x===e));if(i>=0&&R.en[i]!==e){const n=mk(s2,i);n.fresh=1;R.en[i]=n}else R.q.unshift(s2)}ft(e.x,e.y-e.sz/2-30,'It splits into shades!','#c8ccd4')}
+if(e.tithe){S.gold+=e.tithe;R.gain+=e.tithe;ft(e.x,e.y-20,'Your tithe returns!','#ffd23e');e.tithe=0}
 if(e.loot){for(let j=0;j<e.loot;j++)add('a',CL[S.cls].e,14,0);ft(e.x,e.y,'Stolen weapons return!','#ffd23e')}
 if(e.twin)R.twd=e.spec;
 if(s.pl&&e.ps>0&&e.pt>0){const n=target();if(n){n.ps=(n.ps||0)+e.ps;n.pt=Math.max(n.pt||0,e.pt);ft(n.x,n.y-n.sz/2-30,'@pois Plague!','#7fe05a')}else R.pend={ps:e.ps,pt:e.pt}}e.ps=0;drops(e.t)}
@@ -556,6 +566,7 @@ else if(k=='r'&&(vol||(stats().rb&&o.t=='🪨'))){if(stats().rb)R.hq.push('r');i
 else{s='junk';c='#999'}
 K.sum.push([s,k=='c'||k=='x'?o.val*(1+.25*P('pg'))*(hasR('mag')?1.4:1)*(hasR('btt')?2:1)*goldMul():0])}
 function clawUpd(dt){phys(dt);const k=K,sp=spdm(),lo=26,hi=W-26;
+if(k.ph=='aim')k.dg=0;else if(k.ph=='down'&&R.drag&&!k.dg){k.dg=1;R.drag=0;k.x=Math.max(lo,Math.min(hi,k.x+(Math.random()<.5?-1:1)*(60+Math.random()*30)));sfx('clank');ft(k.x,HOME-24,'@chain Yanked!','#ffb02e')}
 if(k.ph=='aim'){if(k.touch){const d=k.tx-k.x,st=3200*dt;k.x+=Math.abs(d)<st?d:Math.sign(d)*st}k.x=Math.max(lo,Math.min(hi,k.x))}
 else if(k.ph=='down'&&HOOK()){k.y+=300*sp*dt;let end=k.y>=DOWN;if(end)k.y=DOWN;const ty=k.y+HT;let n=k.items.filter(o=>o.h&&!o.barb).length;
  const HN=hasR('hcl')?5:3;for(const o of k.items){if(n>=HN)break;if(o.h||o.web||Math.hypot(o.x-k.x,o.y-ty)>o.r+2)continue;
@@ -579,6 +590,7 @@ if(R.p3pend&&!R.p2pend){R.p3pend=0;const v=R.en.find(e=>e&&e.t=='g'&&e.st=='aliv
 if(R.p2pend){R.p2pend=0;const v=R.en.find(e=>e&&e.t=='g'&&e.st=='alive');if(v){v.mv=['gaze','grasp','hymn'];v.ev=1;v.pre='hit';if(v.p3)v.mv=['raise','gaze','grasp','hymn'];v.turn=0;v.chg=0;R.cine={k:'p2',t:0,d:3.8,f:{},then:1};sfx('gong');shake=.45;return}}
 for(const e of R.en)if(e)e.exp=0;
 for(const o of K.items)if(o.web&&--o.wt<=0)o.web=null;
+if(R.sund)R.sund--;{const q=R.en.find(x=>x&&x.st=='alive'&&x.aby&&x.mv&&x.mv.includes('eggs'));for(const o of [...K.items])if(o.egg&&!o.h&&--o.egg<=0){K.items.splice(K.items.indexOf(o),1);if(q)summon(q,['swarm','🕷️'])}}
 const tw=R.en.filter(e=>e&&e.st=='alive'&&e.twin);
 if(R.twd&&tw.length==1){const i=R.en.findIndex((x,j)=>j<R.vis&&!x);if(i>=0){const n=mk(R.twd,i);n.hp=n.max*.5;n.fresh=1;R.en[i]=n;ft(tw[0].x,tw[0].y-tw[0].sz/2-30,'@skull Revives its twin!','#ff5a5a')}}R.twd=null;
 const q=[];if(R.pois.length)q.push({e:null,k:'ptick'});
@@ -653,6 +665,15 @@ else if(k=='raise'){const done=R.en.filter(o=>o&&o.t=='b').map(o=>o.em),opts=[10
 else if(k=='grasp'){const w=K.items.filter(o=>!o.h&&isWpn(o)).sort(()=>Math.random()-.5).slice(0,3);for(const o of w)K.items.splice(K.items.indexOf(o),1);sfx('steal');shake=.3;ft(e.x,e.y-e.sz/2-30,'@claw The hundred hands crush '+w.length+(w.length==1?' weapon':' weapons'),'#ffb02e',14,1.3);R.et=.9}
 else if(k=='hymn'){const h=e.max*.05;e.hp=Math.min(e.max,e.hp+h);summon(e,['grunt','zealot']);ft(e.x,e.y-e.sz/2-30,'@heal Hymn of the Deep · '+fmt(h),'#c9a050',14,1.3);R.et=.9}
 else if(k=='gaze'){const s=stats();EFX.push({k:'gaze',x:e.x,y:84,t:0,d:.7});if(Math.random()<s.dod){sfx('whiff');ft(W/2,170,'Dodged her gaze!','#7fe')}else{const d=e.dm*2.2*(1-s.red);shake=.45;R.lastHit=e;R.poisonKill=0;if(hurt(d,'@burst The eye burns -',W/2))return}R.et=.9}
+else if(k=='drag'){R.drag=1;sfx('clank');ft(e.x,e.y-e.sz/2-30,'@chain Its chains snag your claw','#ffb02e');R.et=.6}
+else if(k=='eggs'){for(let j=0;j<3;j++){add('r','🥚',13,0);K.items[K.items.length-1].egg=2}sfx('bubble');ft(e.x,e.y-e.sz/2-30,'Lays eggs in the machine','#c8ccd4');R.et=.6}
+else if(k=='gnaw'){const cs=K.items.filter(o=>o.k=='c'&&!o.h);for(const o of cs)K.items.splice(K.items.indexOf(o),1);const h=e.max*.04*cs.length;e.hp=Math.min(e.max,e.hp+h);sfx('steal');ft(e.x,e.y-e.sz/2-30,cs.length?'Gnaws '+cs.length+' coins · +'+fmt(h):'Finds no coins to gnaw','#ffb02e');R.et=.6}
+else if(k=='rot'){const ws=K.items.filter(o=>o.k=='a'&&!o.h&&!o.web).sort(()=>Math.random()-.5).slice(0,3);for(const o of ws){o.k='r';o.t='🦴';o.val=0}sfx('bubble');ft(e.x,e.y-e.sz/2-30,'@pois Rots '+ws.length+' weapons to bone','#8fae6a');R.et=.6}
+else if(k=='feast'){const d=stats().max*.12;e.hp=Math.min(e.max,e.hp+d*3);R.lastHit=e;R.poisonKill=0;ft(e.x,e.y-e.sz/2-30,'@blood Feasts on you','#ff6b6b');R.et=.6;if(hurt(d,'@blood Feast -',W/2))return}
+else if(k=='cavein'){for(let j=0;j<6;j++)add('r','🪨',13,0);sfx('slam');shake=.4;ft(e.x,e.y-e.sz/2-30,'Buries your weapons in rubble','#c8b89a');R.et=.7}
+else if(k=='inferno'){const d=e.dm*1.5*(1-stats().red);R.pois.push({d:e.dm*.4,t:3});R.lastHit=e;R.poisonKill=0;shake=.3;ft(e.x,e.y-e.sz/2-30,'@flame Ashfire! You are burning','#ff8a3e');R.et=.7;if(hurt(d,'@flame Ashfire -',W/2))return}
+else if(k=='tithe'){const a=Math.max(0,Math.min(S.gold,R.gain*.1));if(a>0){S.gold-=a;R.gain-=a;e.tithe=(e.tithe||0)+a;save()}sfx('coin');ft(e.x,e.y-e.sz/2-30,a>0?'Takes a tithe of '+fmt(a)+' gold':'Finds nothing to tithe','#ffb02e');R.et=.7}
+else if(k=='sunder'){R.sund=2;sfx('slam');shake=.3;ft(W/2,160,'@burst Your guard is broken!','#ff5a5a');R.et=.7}
 else if(k=='skim'){R.skim=1;ft(e.x,e.y-e.sz/2-30,'Demands a tithe of your next grab','#ffb02e');R.et=.7}
 else{const s=stats(),sl=k=='slam';
 if(Math.random()<s.dod){sfx('whiff');ft(e.x,e.y,sl?'Dodged the SLAM!':'Dodge!','#7fe');if(s.rip)hitNow(e,1,'rip')}
@@ -1896,9 +1917,10 @@ const TI=s=>String(s).replace(/@(\w+)/g,(m,n)=>IP[n]?IC(n):m);
 function ftxt(s,x,y,sz,al){const parts=String(s).split(/(@\w+)/).filter(Boolean),is=sz*1.12,ws=parts.map(p=>p[0]=='@'&&IP[p.slice(1)]?is:g.measureText(p).width),tw=ws.reduce((a,b)=>a+b,0),ta=g.textAlign;
 let cx=al=='left'?x:al=='right'?x-tw:x-tw/2;g.textAlign='left';parts.forEach((p,i)=>{if(p[0]=='@'&&IP[p.slice(1)])g.drawImage(itemSpr(p.slice(1)),cx,y-is/2,is,is);else g.fillText(p,cx,y);cx+=ws[i]});g.textAlign=ta}
 
+IP.egg=[['M0-13C7-13 11-3 11 4C11 11 6 14 0 14C-6 14-11 11-11 4C-11-3-7-13 0-13Z','#bdb39b'],['M-5-7C-3-10 1-10 3-9C0-8-2-6-4-3Z','#ddd5c2'],['M3 2C5 2 6 4 5 5C3 6 2 4 3 2Z M-5 6C-3 6-3 8-4 9C-6 9-6 7-5 6Z','#8e8470']];
 const IPATH={};for(const k in IP)IPATH[k]=IP[k].map(([d,c])=>[new Path2D(d),c]);
 const IEDGE='#15110d';
-function itemShape(o){switch(o.k){case'a':return S.cls=='warrior'?'axe':S.cls=='rogue'?'dagger':'orbw';case'r':return o.t=='🦴'?'bone':o.t=='💀'?'jskull':o.t=='⛓️'?'shackle':o.t=='🏺'?'pot':hasR('vol')?'magma':'rock';case's':return'crystal';case'c':return o.t=='💰'?'pouch':'coin';case'x':return'chest';
+function itemShape(o){switch(o.k){case'a':return S.cls=='warrior'?'axe':S.cls=='rogue'?'dagger':'orbw';case'r':return o.t=='🥚'?'egg':o.t=='🦴'?'bone':o.t=='💀'?'jskull':o.t=='⛓️'?'shackle':o.t=='🏺'?'pot':hasR('vol')?'magma':'rock';case's':return'crystal';case'c':return o.t=='💰'?'pouch':'coin';case'x':return'chest';
 case'f':return'flame';case'h':return'heart';case'z':return'cleave';case'v':return'vial';case'fo':return'comet';case'io':return'star';case'ls':return'storm';default:return'rock'}}
 function drawItem(o){const k=o.r/14;g.save();g.translate(o.x,o.y);g.rotate(o.rot||0);g.scale(k,k);g.drawImage(itemSpr(itemShape(o)),-36/2.2,-36/2.2,72/2.2,72/2.2);
 if(o.web&&o.web.k=='weaver'){g.fillStyle='rgba(160,168,100,.45)';g.beginPath();g.ellipse(0,2,17,14,0,0,7);g.fill();g.strokeStyle='rgba(190,196,130,.6)';g.lineWidth=1.2/k;g.beginPath();g.moveTo(-8,12);g.lineTo(-9,20);g.moveTo(5,13);g.lineTo(6,22);g.stroke()}
@@ -2097,7 +2119,7 @@ if(e.t!='n'&&e.t!='g'&&e.st!='dying'){const R0=e.sz*.78,ag=e.t=='m'?.5:1,gy=e.y+
 if(e.st!='dying'&&e.st!='slain'){g.fillStyle='rgba(0,0,0,.38)';g.beginPath();g.ellipse(e.x,e.y+e.sz*.42,e.sz*.32*sc,e.sz*.08,0,0,7);g.fill()}
 if(e.k=='thief'&&e.loot>0&&e.st!='dying'){const sh=itemShape({k:'a'}),k2=e.sz/62;for(let j=0;j<Math.min(6,e.loot);j++){g.save();g.globalAlpha=al;g.translate(e.x+e.sz*(-.05+j*.11),e.y-e.sz*.2+dy);g.rotate(-1+j*.38);g.scale(k2,k2);g.lineJoin='round';g.strokeStyle=IEDGE;g.lineWidth=1.4/k2;for(const[p,c]of IPATH[sh]){g.fillStyle=c;g.fill(p,'evenodd');g.stroke(p)}g.restore()}
  if(e.loot>0){g.fillStyle='#ffb02e';g.font='bold 11px system-ui';g.fillText('+'+25*Math.min(6,e.loot)+'%',e.x,Math.max(24,e.y-e.sz/2-8)+16)}}
-g.save();g.globalAlpha=al*(e.inv?.3:e.ut?.45:e.k=='ghost'?.75:1);if(e.t=='g'&&drawGodFight(e,T,sc,al,dy,e.lg>0?Math.sin((1-e.lg/.3)*Math.PI):0)){}else{const fr_=FRAMES.has(e.em)?((T*7+e.i)|0)%2:0,bc=e.hol||e.k=='shade'?holCanvas(e.em,fr_):beastCanvas(e.em,fr_),s=e.sz*sc*1.2;if(bc){g.translate(e.x,e.y+s*.35+dy+bob);g.rotate(rot);g.scale((1-.012*br)*sx,(1+.025*br)*sy);g.drawImage(bc,-s/2,-s*.85,s,s);}else{g.font=`${e.sz*sc}px serif`;g.fillText(e.em,e.x,e.y+bob)}}g.restore();
+g.save();g.globalAlpha=al*(e.inv?.3:e.ut?.45:e.k=='ghost'?.75:1);if(e.t=='g'&&drawGodFight(e,T,sc,al,dy,e.lg>0?Math.sin((1-e.lg/.3)*Math.PI):0)){}else{const fr_=FRAMES.has(e.em)?((T*7+e.i)|0)%2:0,bc=e.hol||e.k=='shade'?holCanvas(e.em,fr_):beastCanvas(e.em,fr_),s=e.sz*sc*1.2;if(bc){g.translate(e.x,e.y+s*.35+dy+bob);g.rotate(rot);g.scale((1-.012*br)*sx,(1+.025*br)*sy);if(e.aby){g.shadowColor='rgba(170,30,20,.85)';g.shadowBlur=18;g.filter='saturate(.55) brightness(.8) sepia(.3) hue-rotate(-20deg) contrast(1.15)'}g.drawImage(bc,-s/2,-s*.85,s,s);}else{g.font=`${e.sz*sc}px serif`;g.fillText(e.em,e.x,e.y+bob)}}g.restore();
 if(e.fz&&e.st!='dying'){g.fillStyle='rgba(150,220,255,.35)';g.beginPath();g.arc(e.x,e.y+bob,e.sz*.48,0,7);g.fill();g.drawImage(itemSpr('star'),e.x+e.sz*.4-8,e.y-e.sz*.4-8,16,16)}
 if(e.col&&e.st!='dying'){const x=e.x+e.sz*.42,y=e.y+e.sz*.28;g.beginPath();g.moveTo(x-6,y-7);g.lineTo(x+6,y-7);g.lineTo(x+6,y);g.quadraticCurveTo(x+6,y+6,x,y+9);g.quadraticCurveTo(x-6,y+6,x-6,y);g.closePath();g.fillStyle=e.exp?'#4a4038':'#6f6858';g.fill();g.lineWidth=1.4;g.strokeStyle='#110d0a';g.stroke();if(e.exp){g.strokeStyle='#c98a3a';g.beginPath();g.moveTo(x-1,y-7);g.lineTo(x+2,y-1);g.lineTo(x-2,y+3);g.lineTo(x+1,y+8);g.stroke()}}
 if(e.chg&&e.st!='dying'){const pu=.5+.5*Math.sin(performance.now()/90);g.fillStyle=`rgba(255,60,60,${.18+.22*pu})`;g.beginPath();g.arc(e.x,e.y+bob,e.sz*.55,0,7);g.fill();g.drawImage(itemSpr('warn'),e.x-e.sz*.42-12,e.y-e.sz*.38-12,24,24)}
