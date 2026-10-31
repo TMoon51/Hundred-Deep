@@ -466,7 +466,7 @@ if(e.t=='g'&&R.abyss&&e.p2&&!e.p3&&!R.p2pend&&e.hp<=e.max*.25){if(e.hp<=0)e.hp=e
 if(e.enr&&!e.enraged&&e.hp>0&&e.hp<e.max*.5){e.enraged=1;e.at=2;ft(e.x,e.y-e.sz/2-30,'@burst ENRAGED','#ff5a5a')}
 if(e.split===0&&e.hp>0&&e.hp<e.max*.5){e.split=1;e.inv=1;ft(e.x,e.y-e.sz/2-30,'@bat Becomes a swarm!','#ff6b6b');for(let j=0;j<4;j++)summon(e,['swarm','🦇'],e)}}
 function kill(e){if(e.t=='g'){if(e.st!='alive')return;e.st='slain';e.hp=0;R.kills=(R.kills||0)+1;R.bk=(R.bk||0)+1;for(const o of R.en)if(o&&o!==e&&o.st=='alive'){o.st='dying';o.fade=.5}R.q=[];R.hq=[];R.arcs=[];R.cine={k:'die',t:0,d:8.6,f:{},ash:[]};musicStop();sfx('slam');shake=.6;return}
-const s=stats();e.st='dying';e.fade=.5;R.kills=(R.kills||0)+1;if(e.t!='n')R.bk=(R.bk||0)+1;sfx('kill');burst(e.x,e.y,'#ffd23e',14,170);if(s.kh)heal(s.max*s.kh);
+const s=stats();e.st='dying';e.fade=.5;R.kills=(R.kills||0)+1;if(e.t!='n')R.bk=(R.bk||0)+1;sfx('kill');hap(e.t=='n'?'med':'heavy');burst(e.x,e.y,'#ffd23e',14,170);if(s.kh)heal(s.max*s.kh);
 for(const o of K.items)if(o.web===e)o.web=null;
 if(e.t=='b'){const T=S.st;T.bkd=T.bkd||{};const m=R.abyss?'a':'n';T.bkd[m]=T.bkd[m]||{};T.bkd[m][R.L]=1;hap('heavy')}if(R.kills==1)ach('first');
 if(e.k=='bloat'){R.pois.push({d:e.dm*.6,t:3+(CUR('venom')?2:0)});sfx('bubble');ft(e.x,e.y-e.sz/2-30,'@pois It bursts! You are poisoned','#7fe05a')}
@@ -486,7 +486,7 @@ if(kind=='h'&&s.ex&&e.hp<e.max*.3){d*=2;tag=' @xmark'}
 if(s.sh&&e.fz){d*=1+s.sh;tag+=' @burst'}
 if(R.fb&&hasR('fst')){R.fb=0;d*=2;tag+=' @fblood'}
 if(s.mk&&e===R.mark)d*=1.25;
-e.hp-=d;e.fl=.12;R.sw=1;hap(c?'med':'light');if(d>(R.maxHit||0))R.maxHit=d;sfx(S.cls=='warrior'?'thud':S.cls=='rogue'?'slash':'zap');if(c)sfx('crit');burst(e.x,e.y,S.cls=='warrior'?'#ffe0a0':S.cls=='rogue'?'#e8f4ff':'#d9a8ff',c?9:4,c?160:110);ft(e.x+Math.random()*30-15,e.y-e.sz/2-14,fmt(d)+(c?'!':'')+tag,c||tag?'#ffd23e':'#fff');
+e.hp-=d;e.fl=.12;R.sw=1;hap(c?'heavy':'light');if(d>(R.maxHit||0))R.maxHit=d;sfx(S.cls=='warrior'?'thud':S.cls=='rogue'?'slash':'zap');if(c)sfx('crit');burst(e.x,e.y,S.cls=='warrior'?'#ffe0a0':S.cls=='rogue'?'#e8f4ff':'#d9a8ff',c?9:4,c?160:110);ft(e.x+Math.random()*30-15,e.y-e.sz/2-14,fmt(d)+(c?'!':'')+tag,c||tag?'#ffd23e':'#fff');
 if(kind!='arc'){if(S.cls=='mage'){if(kind=='h')wbolt(e)}else FX.push({k:'s',t:0,m:Math.random()<.5?0:1,tx:e.x,ty:e.y})}if(S.cls=='rogue'&&kind!='arc'&&kind!='r')wstab(c);
 if(e.k=='faceless'&&kind=='h'&&R.state=='play'){const r=e.dm*.25/CL[S.cls].h*(1-s.red);if(hurt(r,'@shield Reflected -',W/2+(e.x-W/2)*.4))return}
 if(s.mn&&kind=='h'&&++R.mana>=20){R.mana-=20;R.hq.push('mt');ach('meteor');ft(W/2,90,'@magma METEOR incoming!','#ff8a3e')}
@@ -574,7 +574,7 @@ function inside(z){let a=0,n=0;for(let i=-6;i<=6;i++)for(let j=-6;j<=6;j++){cons
 // loot (anything but rubble) about to slip out of the top of the grip: stop here rather than dig past it
 const topped=()=>zones().some(z=>K.items.some(o=>!o.h&&!o.web&&o.k!='r'&&Math.abs(o.x-z.x)<z.r*.7&&o.y<z.y-z.r*.35&&o.y>z.y-z.r));
 const filled=()=>topped()||zones().every(z=>fillOf(z)>=z.cap*(S.cls=='mage'?1.02:.97)*Math.max(.25,inside(z)));
-function grab(){const taken=new Map();K.jolt=.22;
+function grab(){const taken=new Map();K.jolt=.22;hap('light');
 if(S.cls=='mage'){const z=zones()[0],gw=GW(),dd=o=>Math.hypot(o.x-z.x,o.y-z.y);
  for(const o of K.items.filter(o=>!o.h&&!o.web&&(dd(o)<z.r+o.r*.3||(gw&&gem(o)&&dd(o)<z.r*GR+o.r*.3))).sort((a,b)=>dd(a)-dd(b))){const f=Math.min(1,(z.r*.5)/Math.max(1,dd(o)));o._tx=z.x+(o.x-z.x)*f;o._ty=z.y+(o.y-z.y)*f;taken.set(o,0)}
  for(const[o]of taken){o.edge=false;o.h=1;o.dx=o.x-K.x;o.dy=o.y-K.y;o.tdx=o._tx-K.x;o.tdy=o._ty-K.y}if(taken.size)FX.push({k:'mag',t:0,x:z.x,y:z.y,r:z.r});return}
@@ -585,7 +585,7 @@ for(const o of c){const ar=Math.PI*o.r*o.r;if(ar>cap)continue;cap-=ar;const d=Ma
 for(const[o,d]of taken){o.edge=d>.75;if(o.edge&&Math.random()<.2)continue;o.h=1;o.dx=o.x-K.x;o.dy=o.y-K.y;o.tdx=o._tx-K.x;o.tdy=o._ty-K.y}}
 function grabSummary(){const m=new Map();let gold=0;for(const[s,v]of K.sum){if(v){gold+=v;continue}const key=s.replace(/!$/,'');m.set(key,(m.get(key)||0)+1)}
 const parts=[...m].map(([k,n])=>n>1?k+' ×'+n:k);if(gold)parts.push('+'+fmt(gold)+' @coin');ft(W/2,HOME+66,parts.length?parts.join(' · '):'Nothing grabbed',parts.length?'#e9e1d3':'#999',14,1.5)}
-function got(o,i){let s,c='#ffd23e';const k=o.k;{const sh=itemShape(o);R.got=R.got||{};R.got[sh]=(R.got[sh]||0)+1}const vol=k=='r'&&o.t=='🪨'&&hasR('vol');sfx(k=='c'||k=='x'?'coin':k=='f'||k=='h'||k=='s'?'gem':k=='r'&&(o.t!='🪨'||!stats().rb)&&!vol?'junk':'pick',i);
+function got(o,i){let s,c='#ffd23e';const k=o.k;{const sh=itemShape(o);R.got=R.got||{};R.got[sh]=(R.got[sh]||0)+1}const vol=k=='r'&&o.t=='🪨'&&hasR('vol');if(k=='x')hap('heavy');else if(k=='c'&&o.t=='💰')hap('med');sfx(k=='c'||k=='x'?'coin':k=='f'||k=='h'||k=='s'?'gem':k=='r'&&(o.t!='🪨'||!stats().rb)&&!vol?'junk':'pick',i);
 if(k=='a'){if(K.side<2)R.cg[K.side]=1;for(let j=0;j<CL[S.cls].h;j++)R.hq.push('h');if(hasR('ech')&&Math.random()<.25){R.hq.push('h');s='Echo!'}else s='Attack!';c='#fff'}
 else if(k=='z'){R.hq.push('c');s='Cleave!';c='#ffd23e'}
 else if(k=='fo'){R.hq.push('fo');s='Fireball!';c='#ff8a3e'}
@@ -620,7 +620,7 @@ else if(S.cls=='rogue'&&R.rc==1&&shadowTurn()){R.rc=2;k.side=2;k.x=k.px[2];start
 else if(S.cls=='mage'&&st.rc&&R.rc==0){R.rc=1;k.small=1;startClaw()}
 else{k.ph='wait';k.small=0;startAttack()}}}
 for(const o of k.items)if(o.h){if(o.tdx!=null){const f=Math.min(1,dt*12);o.dx+=(o.tdx-o.dx)*f;o.dy+=(o.tdy-o.dy)*f}o.x=k.x+o.dx;o.y=k.y+o.dy}}
-function beginEnemy(){if(R.fresh){R.fresh=false;endTurn();return}
+function beginEnemy(){R.fresh=false;
 if(R.p3pend&&!R.p2pend){R.p3pend=0;const v=R.en.find(e=>e&&e.t=='g'&&e.st=='alive');if(v){v.mv=['raise','gaze','grasp','hymn'];v.turn=0;R.cine={k:'p3',t:0,d:4,f:{},then:1};sfx('gong');shake=.5;return}}
 if(R.p2pend){R.p2pend=0;const v=R.en.find(e=>e&&e.t=='g'&&e.st=='alive');if(v){v.mv=['gaze','grasp','hymn'];v.ev=1;v.pre='hit';if(v.p3)v.mv=['raise','gaze','grasp','hymn'];v.turn=0;v.chg=0;R.cine={k:'p2',t:0,d:3.8,f:{},then:1};sfx('gong');shake=.45;return}}
 for(const e of R.en)if(e)e.exp=0;
@@ -642,7 +642,7 @@ function webItems(e,n){sfx('web');const free=K.items.filter(o=>!o.h&&!o.web),pic
 function steal(e,n){let c=0;sfx('steal');for(let j=0;j<n;j++){const w=K.items.filter(o=>o.k=='a'&&!o.h&&!o.web);if(!w.length)break;K.items.splice(K.items.indexOf(w[Math.random()*w.length|0]),1);e.loot++;c++}if(c)ft(Math.max(70,Math.min(W-70,e.x)),e.y-e.sz/2-30,e.k=='thief'?'Arms itself · +'+25*Math.min(6,e.loot)+'%':'Steals '+c+(c>1?' weapons':' weapon'),'#ffb02e',14,1.2)}
 function burn(e,n){const free=K.items.filter(o=>!o.h);if(!free.length)return;const y0=free[Math.random()*free.length|0].y,band=free.filter(o=>Math.abs(o.y-y0)<18).sort(()=>Math.random()-.5).slice(0,n);
 for(const o of band)K.items.splice(K.items.indexOf(o),1);FX.push({k:'burn',t:0,y:y0});sfx('burn');shake=.3;ft(e.x,e.y-e.sz/2-30,'@flame Burns '+band.length+' items!','#ff8a3e')}
-function tilt(e){sfx('tilt');const d=Math.random()<.5?-1:1;for(const o of K.items)if(!o.h){o.vx+=d*(380+Math.random()*160);o.vy-=120}shake=.35;ft(e.x,e.y-e.sz/2-30,(d<0?'@arrL':'@arrR')+(e.house?' Shakes the reliquary!':e.em=='bellringer'?' The bell tolls!':' Shakes the machine!'),'#ffb02e')}
+function tilt(e){sfx('tilt');hap('heavy');const d=Math.random()<.5?-1:1;for(const o of K.items)if(!o.h){o.vx+=d*(380+Math.random()*160);o.vy-=120}shake=.35;ft(e.x,e.y-e.sz/2-30,(d<0?'@arrL':'@arrR')+(e.house?' Shakes the reliquary!':e.em=='bellringer'?' The bell tolls!':' Shakes the machine!'),'#ffb02e')}
 function hurt(d,txt,x){const s=stats();R.hp-=d;R.fd=(R.fd||0)+d;hap(txt.startsWith('SLAM')?'heavy':'med');sfx(txt.startsWith('@pois')?'bubble':txt.startsWith('SLAM')?'slam':'hurt');if(s.rg)R.rage=Math.min(100,R.rage+d/s.max*200);ft(x,190,txt+fmt(d),'#ff5a5a');
 if(R.hp<=0){if(s.ls&&!R.ls){R.ls=1;R.hp=1;ft(W/2,160,'@shield Last Stand!','#ffd23e')}else if(canRevive()){R.hp=0;offerRevive();return true}else{die();return true}}return false}
 function offerRelic(hd,sub){const pool=Object.keys(RL).filter(k=>!R.rel.includes(k)&&!CURSED.has(k)),cp=R.abyss?Object.keys(RL).filter(k=>!R.rel.includes(k)&&CURSED.has(k)):[],ch=[];if(!pool.length&&!cp.length)return false;if(cp.length)ch.push(cp[Math.random()*cp.length|0]);while(ch.length<3&&pool.length)ch.push(pool.splice(Math.random()*pool.length|0,1)[0]);
@@ -661,7 +661,7 @@ function mergeGold(){let any=0;
    const n=make(v);n.x=x;n.y=y;n.vx=0;n.vy=0;n.rot=.3*(Math.random()-.5);K.items.push(n);burst(x,y,'#e8c66a',8,90)}};
  pass(o=>o.k=='c'&&o.t!='💰',v=>({k:'c',t:'💰',r:16,val:v}));
  pass(o=>o.k=='c'&&o.t=='💰',v=>({k:'x',t:'🎁',r:18,val:v}));
- if(any)sfx('coin')}
+ if(any){sfx('coin');hap('med')}}
 function startClaw(){mergeGold();if(K.ph!='aim')bed();if(K.items.filter(o=>o.k=='a'&&!o.h).length<RESTOCK)refill();K.ph='aim';R.ph='claw';K.touch=0}
 function beginTick(){const q=R.en.filter(e=>e&&e.st=='alive'&&e.ps>0);if(!q.length)return false;R.tq=q;R.ph='tk';R.et=.3;return true}
 function afterAttack(){if(!R.tk){R.tk=true;if(beginTick())return}beginEnemy()}
@@ -717,7 +717,7 @@ else if(k=='eggs'){for(let j=0;j<3;j++){add('r','🥚',13,0);K.items[K.items.len
 else if(k=='gnaw'){const cs=K.items.filter(o=>o.k=='c'&&!o.h);for(const o of cs)K.items.splice(K.items.indexOf(o),1);const h=e.max*.04*cs.length;e.hp=Math.min(e.max,e.hp+h);sfx('steal');ft(e.x,e.y-e.sz/2-30,cs.length?'Gnaws '+cs.length+' coins · +'+fmt(h):'Finds no coins to gnaw','#ffb02e');R.et=.6}
 else if(k=='rot'){const ws=K.items.filter(o=>o.k=='a'&&!o.h&&!o.web).sort(()=>Math.random()-.5).slice(0,3);for(const o of ws){o.k='r';o.t='🦴';o.val=0}sfx('bubble');ft(e.x,e.y-e.sz/2-30,'@pois Rots '+ws.length+' weapons to bone','#8fae6a');R.et=.6}
 else if(k=='feast'){const d=stats().max*.12;e.hp=Math.min(e.max,e.hp+d*3);R.lastHit=e;R.poisonKill=0;ft(e.x,e.y-e.sz/2-30,'@blood Feasts on you','#ff6b6b');R.et=.6;if(hurt(d,'@blood Feast -',W/2))return}
-else if(k=='cavein'){for(let j=0;j<6;j++)add('r','🪨',13,0);sfx('slam');shake=.4;ft(e.x,e.y-e.sz/2-30,'Buries your weapons in rubble','#c8b89a');R.et=.7}
+else if(k=='cavein'){for(let j=0;j<6;j++)add('r','🪨',13,0);sfx('slam');hap('heavy');shake=.4;ft(e.x,e.y-e.sz/2-30,'Buries your weapons in rubble','#c8b89a');R.et=.7}
 else if(k=='inferno'){const d=e.dm*1.5*(1-stats().red);R.pois.push({d:e.dm*.4,t:3});R.lastHit=e;R.poisonKill=0;shake=.3;ft(e.x,e.y-e.sz/2-30,'@flame Ashfire! You are burning','#ff8a3e');R.et=.7;if(hurt(d,'@flame Ashfire -',W/2))return}
 else if(k=='tithe'){const a=Math.max(0,Math.min(S.gold,R.gain*.1));if(a>0){S.gold-=a;R.gain-=a;e.tithe=(e.tithe||0)+a;save()}sfx('coin');ft(e.x,e.y-e.sz/2-30,a>0?'Takes a tithe of '+fmt(a)+' gold':'Finds nothing to tithe','#ffb02e');R.et=.7}
 else if(k=='sunder'){R.sund=2;sfx('slam');shake=.3;ft(W/2,160,'@burst Your guard is broken!','#ff5a5a');R.et=.7}
