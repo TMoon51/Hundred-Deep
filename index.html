@@ -278,6 +278,10 @@ timp:(m,t,d,v)=>{const o=osc('sine',mf(m));o.frequency.setValueAtTime(mf(m)*1.5,
 taiko:(m,t,d,v)=>{const o=osc('sine',62);o.frequency.setValueAtTime(110,t);o.frequency.exponentialRampToValueAtTime(48,t+.25);const gn=AC.createGain();gn.gain.setValueAtTime(.0001,t);gn.gain.exponentialRampToValueAtTime(v,t+.004);gn.gain.exponentialRampToValueAtTime(.0001,t+.5);o.connect(gn);gn.connect(MUS.in);o.start(t);o.stop(t+.55);
  const sr=AC.createBufferSource(),b=lpf(900),g2=AC.createGain();sr.buffer=NB;g2.gain.setValueAtTime(v*.5,t);g2.gain.exponentialRampToValueAtTime(.0001,t+.18);sr.connect(b);b.connect(g2);g2.connect(MUS.in);sr.start(t,Math.random()*.5);sr.stop(t+.2)},
 snare:(m,t,d,v)=>{const sr=AC.createBufferSource(),b=AC.createBiquadFilter(),g2=AC.createGain();b.type='bandpass';b.frequency.value=1800;b.Q.value=.8;sr.buffer=NB;g2.gain.setValueAtTime(v,t);g2.gain.exponentialRampToValueAtTime(.0001,t+.16);sr.connect(b);b.connect(g2);g2.connect(MUS.in);sr.start(t,Math.random()*.5);sr.stop(t+.18)},
+screech:(m,t,d,v)=>{const f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=mf(m)*1.5;f.Q.value=1.2;const gn=AC.createGain(),tg=AC.createGain(),lf=osc('sine',11),ld=AC.createGain();ld.gain.value=.5;lf.connect(ld);ld.connect(tg.gain);tg.gain.value=.5;
+ gn.gain.setValueAtTime(.0001,t);gn.gain.exponentialRampToValueAtTime(v,t+d*.85);gn.gain.exponentialRampToValueAtTime(.0001,t+d+.25);f.connect(tg);tg.connect(gn);gn.connect(MUS.in);lf.start(t);lf.stop(t+d+.3);
+ for(const k of[0,1,6]){const o=osc('sawtooth',mf(m+k),k*4);o.frequency.setValueAtTime(mf(m+k),t);o.frequency.linearRampToValueAtTime(mf(m+k)*1.06,t+d);o.connect(f);o.start(t);o.stop(t+d+.3)}},
+rumble:(m,t,d,v)=>{const sr=AC.createBufferSource();sr.buffer=NB;sr.loop=true;const f=lpf(90,2),gn=AC.createGain();gn.gain.setValueAtTime(.0001,t);gn.gain.linearRampToValueAtTime(v,t+d*.5);gn.gain.linearRampToValueAtTime(.0001,t+d);sr.connect(f);f.connect(gn);gn.connect(MUS.in);sr.start(t);sr.stop(t+d+.05)},
 heart:(m,t,d,v)=>{for(const[dt,vv]of[[0,v],[.2,v*.75]]){const o=osc('sine',52),gn=AC.createGain();gn.gain.setValueAtTime(.0001,t+dt);gn.gain.exponentialRampToValueAtTime(vv,t+dt+.01);gn.gain.exponentialRampToValueAtTime(.0001,t+dt+.25);o.connect(gn);gn.connect(MUS.in);o.start(t+dt);o.stop(t+dt+.3)}}};
 // --- the pieces ---
 const SONGS={
@@ -299,9 +303,9 @@ abyss:{bpm:58,aby:1,prog:['Dm','Eb','Dm','Db','Bbm','A','Dm','Eb'],
  mel:['D5:3 r:1','Eb5:2 D5:2','F5:1 E5:1 D5:2','Db5:4','F5:2 Db5:2','C#5:2 E5:2','A4:1 D5:1 F5:2','Eb5:4'].map(mel)},
 aboss:{bpm:112,aby:1,prog:['Dm','Eb','Bbm','A','Dm','Db','Eb','A'],
  mel:['D4:1 Eb4:1 D4:1 r:1','Eb4:1 F4:.5 Eb4:.5 D4:2','Db4:1 C4:1 Db4:1 F4:1','E4:1.5 F4:.5 E4:1 C#4:1','D4:.5 D4:.5 F4:1 Ab4:1 G4:1','Ab4:1 G4:1 F4:1 Db4:1','Eb4:1.5 D4:.5 Eb4:1 G4:1','C#4:2 r:2'].map(mel)},
-agod:{bpm:132,aby:1,prog:['Dm','Dm','Bb','A','Dm','Eb','Gm','A','Bb','C','Dm','Eb','Bb','Gm','A','A'],
- mel:['D5:.5 D5:.5 A5:1 F5:1 D5:1','E5:.5 F5:.5 G5:1 F5:1 E5:1','D5:1.5 F5:.5 Bb5:2','A5:1 G5:1 E5:1 C#5:1','D6:1 A5:1 F5:1 D5:1','Eb5:1 G5:1 Bb5:1.5 A5:.5','G5:1 Bb5:1 D6:1 Bb5:1','A5:3 C#5:1',
-      'D6:2 C6:1 Bb5:1','C6:2 Bb5:1 G5:1','A5:1.5 G5:.5 F5:1 D5:1','Eb5:1 G5:1 Bb5:1 Eb6:1','D6:1.5 C6:.5 Bb5:1 F5:1','G5:1 A5:1 Bb5:1 D6:1','C#6:2 E6:2','A5:4'].map(mel)},
+agod:{bpm:132,aby:1,prog:['Dm','Dm','Bbm','A','Dm','Eb','Gm','A','Bbm','Gb','Dm','Eb','Bbm','Db','A','A'],
+ mel:['D4:.5 D4:.5 A4:1 F4:1 D4:1','Eb4:.5 D4:.5 Db4:1 D4:1 F4:1','Db4:1.5 F4:.5 Bb4:2','A4:1 G4:1 F4:1 C#4:1','D5:1 A4:1 F4:1 D4:1','Eb4:1 G4:1 Bb4:1.5 A4:.5','G4:1 Bb4:1 D5:1 Db5:1','C#5:3 A4:1',
+      'Db5:2 C5:1 Bb4:1','Gb4:2 F4:1 Db4:1','D4:1.5 F4:.5 Ab4:1 G4:1','Eb4:1 G4:1 Bb4:1 Eb5:1','Db5:1.5 C5:.5 Bb4:1 F4:1','Ab4:1 F4:1 Db4:1 F4:1','E4:2 F4:2','D4:2 C#4:2'].map(mel)},
 god:{bpm:56,prog:['Dm','Eb','Cm','Db','Dm','Bb','Eb','A'],
  mel:['D5:4','Eb5:4','G5:2 F5:2','F5:4','A5:3 G5:1','F5:4','G5:2 Bb5:2','A5:4'].map(mel)}};
 function barEvents(name,bar){const S0=SONGS[name],sg=S0.ref?SONGS[S0.ref]:S0,n=sg.prog.length,bi=bar%n,pass=Math.floor(bar/n),c=sg.prog[bi],ch=CHD[c],rt=ROOT[c],ev=[],E=(i,b,d,m,v)=>ev.push([i,b,d,m,v]);
@@ -326,11 +330,11 @@ else if(name=='aboss'){ch.forEach(m=>E('choir',0,4,m-12,.05));E('organ',0,4,rt,.
  E('brass',0,.6,ch[0],.12);E('brass',2.5,.45,ch[0],.1);[0,.5,1.5,2,2.5,3.5].forEach((b,i)=>E('taiko',b,.3,0,i%2?.14:.23));[1,3].forEach(b=>E('snare',b,.2,0,.05));E('timp',0,1,rt+12,.17);
  if(bi%4==3)for(let k=0;k<8;k++)E('timp',2+k*.25,.25,rt+12,.04+k*.012);if(bi==0||bi==4)E('bell',0,4,rt+12,.06);
  if(pass%2==0){line('brass',.1);line('cello',.05,12)}else{line('choir',.08);line('strings',.05)}}
-else if(name=='agod'){const hi=bi>=8;ch.forEach(m=>E('organ',0,4,m,.055));E('organ',0,4,rt,.07);ch.forEach(m=>E('choir',0,4,m+(hi?12:0),.045));
- [0,12,0,1,0,12,0,7].forEach((k,i)=>E('cello',i*.5,.42,rt+12+k,.11));[0,1,2,3].forEach(b=>E('taiko',b,.3,0,b%2?.17:.23));if(hi)[.5,1.5,2.5,3.5].forEach(b=>E('taiko',b,.25,0,.09));
- [1,3].forEach(b=>E('snare',b,.2,0,.08));if(bi%4==3)for(let k=0;k<8;k++)E('snare',2+k*.25,.15,0,.03+k*.01);E('timp',0,1,rt+12,.17);
- E('brass',0,.5,ch[0]+12,.11);E('brass',1.5,.4,ch[0]+12,.09);if(bi==0||bi==8)E('bell',0,4,rt+24,.06);
- if(!hi){if(pass%2==0)line('brass',.09);else{line('strings',.1);line('brass',.05,-12)}}else{line('choir',.08);line('strings',.09);if(pass%2==1)line('brass',.06,-12)}}
+else if(name=='agod'){const hi=bi>=8;ch.forEach(m=>E('organ',0,4,m-12,.06));E('organ',0,4,rt,.08);ch.forEach(m=>E('choir',0,4,m-(hi?0:12),.05));E('strings',0,4,ch[0]+1,.012);
+ [0,12,0,1,0,6,0,1].forEach((k,i)=>E('cello',i*.5,.42,rt+12+k,.12));[0,1,2,3].forEach(b=>E('taiko',b,.3,0,b%2?.18:.25));if(hi)[.5,1.5,2.5,3.5].forEach(b=>E('taiko',b,.25,0,.1));
+ [1,3].forEach(b=>E('snare',b,.2,0,.06));if(bi%4==3)for(let k=0;k<8;k++)E('timp',2+k*.25,.25,rt+12,.04+k*.012);E('timp',0,1,rt+12,.18);
+ E('brass',0,.5,ch[0],.12);E('brass',1.5,.4,ch[0],.1);if(bi%4==0){E('bell',0,4,rt+12,.06);E('bell',0,4,rt+13,.035)}E('rumble',0,4,0,.22);if(bi%4==3)E('screech',1,3,ch[0]+24,.035);if(hi&&bi%4==1)E('screech',0,2,ch[2]+24,.025);
+ if(!hi){if(pass%2==0){line('brass',.1);line('cello',.05)}else{line('choir',.08);line('brass',.05)}}else{line('choir',.09);line('brass',.07);line('strings',.05)}}
 else if(name=='god'){ch.forEach(m=>E('organ',0,4,m,.07));E('organ',0,4,rt,.08);line('choir',.07);E('bell',0,4,ch[0]+12,.07);E('timp',0,1,rt+12,.18);
  if(bi==7)for(let k=0;k<16;k++)E('timp',k*.25,.25,rt+12,.03+k*.008);if(pass%2==1)line('strings',.05,-12)}
 return ev}
