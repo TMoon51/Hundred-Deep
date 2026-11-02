@@ -638,7 +638,7 @@ else{s='junk';c='#999'}
 K.sum.push([s,k=='c'||k=='x'?o.val*(1+.25*P('pg'))*(hasR('mag')?1.4:1)*(hasR('btt')?2:1)*goldMul():0])}
 function clawUpd(dt){phys(dt);const k=K,sp=spdm(),lo=26,hi=W-26;
 if(k.ph=='aim')k.dg=0;else if(k.ph=='down'&&R.drag&&!k.dg){k.dg=1;R.drag=0;k.x=Math.max(lo,Math.min(hi,k.x+(Math.random()<.5?-1:1)*(60+Math.random()*30)));sfx('clank');ft(k.x,HOME-24,'@chain Yanked!','#ffb02e')}
-if(k.ph=='aim'){if(k.touch){const d=k.tx-k.x,st=3200*dt;k.x+=Math.abs(d)<st?d:Math.sign(d)*st}k.x=Math.max(lo,Math.min(hi,k.x));if(S.cls=='rogue'&&k.side!=2){const gp=44*CS();if(Math.abs(k.x-W/2)<gp)k.x=W/2+(k.x<W/2?-gp:gp)}}
+if(k.ph=='aim'){if(k.touch){const d=k.tx-k.x,st=3200*dt;k.x+=Math.abs(d)<st?d:Math.sign(d)*st}k.x=Math.max(lo,Math.min(hi,k.x));}
 else if(k.ph=='down'&&HOOK()){k.y+=300*sp*dt;let end=k.y>=DOWN;if(end)k.y=DOWN;const ty=k.y+HT;let n=k.items.filter(o=>o.h&&!o.barb).length;
  const HN=hasR('hcl')?5:3;for(const o of k.items){if(n>=HN)break;if(o.h||o.web||Math.hypot(o.x-k.x,o.y-ty)>o.r+2)continue;
   for(const q of k.items)if(q.h)q.tdy-=20;o.h=1;o.edge=false;o.dx=o.x-k.x;o.dy=o.y-k.y;o.tdx=(Math.random()-.5)*5;o.tdy=HT-14;n++;sfx('clank');
@@ -2079,8 +2079,8 @@ function chaseLights(){}
 function grain(){if(!GRAIN)return;g.save();g.globalAlpha=.55;g.translate(-17,-41);g.fillStyle=g.createPattern(GRAIN,'repeat');g.fillRect(0,0,W+96,SH+96);g.restore()}
 const steel=(x0,x1,G=g)=>{const gr=G.createLinearGradient(x0,0,x1,0);gr.addColorStop(0,'#24221f');gr.addColorStop(.45,'#77716a');gr.addColorStop(.62,'#4e4944');gr.addColorStop(1,'#1c1a18');return gr};
 function rrect(x,y,w,h,r,G=g){G.beginPath();G.moveTo(x+r,y);G.arcTo(x+w,y,x+w,y+h,r);G.arcTo(x+w,y+h,x,y+h,r);G.arcTo(x,y+h,x,y,r);G.arcTo(x,y,x+w,y,r);G.closePath()}
-function twinChain(x1,x2,y){const a=Math.min(x1,x2),b=Math.max(x1,x2),sp=b-a,L=250,sag=Math.min(46,Math.sqrt(Math.max(0,L*L-sp*sp))*.32)+4,f=skinF(),ch=f&&f.ch||['#3e3a36','#5e5852'];
- const P=t=>[a+(b-a)*t,y+4*sag*t*(1-t)],n=Math.max(8,Math.round((sp+sag)/7));g.save();g.globalAlpha=.85;g.lineWidth=1.6;
+function twinChain(x1,x2,y){const a=Math.min(x1,x2),b=Math.max(x1,x2),sp=b-a,L=250,sag=(Math.min(46,Math.sqrt(Math.max(0,L*L-sp*sp))*.32)+4)*Math.min(1,sp/110),f=skinF(),ch=f&&f.ch||['#3e3a36','#5e5852'];
+ const P=t=>[a+(b-a)*t,y+4*sag*t*(1-t)],n=Math.max(8,Math.round((sp+sag)/7));if(sp<14)return;g.save();g.globalAlpha=.85*Math.min(1,(sp-14)/30);g.lineWidth=1.6;
  for(let i=1;i<n;i++){const[px,py]=P(i/n),[qx,qy]=P((i+.5)/n),ang=Math.atan2(qy-py,qx-px);g.strokeStyle=i%2?ch[0]:ch[1];g.beginPath();if(i%2){g.moveTo(px-Math.cos(ang)*3,py-Math.sin(ang)*3);g.lineTo(px+Math.cos(ang)*3,py+Math.sin(ang)*3)}else g.ellipse(px,py,3.6,2.1,ang,0,7);g.stroke()}
  g.restore()}
 function cable(x,y0,y1){g.lineWidth=2.2;for(let y=y0+2,i=0;y<y1-2;y+=7,i++){{const f=skinF(),ch=f&&f.ch||['#4a4540','#6e6760'];g.strokeStyle=i%2?ch[0]:ch[1]};g.beginPath();if(i%2){g.moveTo(x,y-1);g.lineTo(x,y+6)}else{g.ellipse(x,y+2.5,2.6,4.2,0,0,7)}g.stroke()}
