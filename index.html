@@ -106,7 +106,7 @@ const U=c=>{const u=S.u[c]||(S.u[c]={sz:0,dmg:0,hp:0,sk:0});if(u.sz==null){const
 const P=k=>(S.pu&&S.pu[k])||0;
 const PU=[['pdm','@sword Soul Might','+25% damage',5,1.6,0],['php','@hrt Soul Vigor','+25% max HP',5,1.6,0],['pcr','@burst Keen Edge','+4% crit chance for every class (crits deal double damage)',20,1.8,5],['pg','@pouch Soul Greed','+25% gold from coins',5,1.6,0],['pgo','@coin Inheritance','After each Descend, start with 400 gold per level instead of none',8,1.7,10],['phv','@shard Soul Harvest','+15% Soul Shards from runs and Descend',25,1.9,10],['pgr','@claw Deep Grip','+8% grip capacity (Mage: a wider pull)',15,2,5],['pst','@door Head Start','Start runs 10 floors deeper (pick your floor above)',20,1.8,9],['plb','@up Limit Break','+2 max level for Damage and Health',25,1.7,10]];
 const LVCAP=()=>15+2*P('plb'),MAXLV=k=>k=='sz'?SZMAX:LVCAP();
-const pcost=(p,l)=>Math.ceil(p[3]*Math.pow(p[4],l)),SHM=()=>1+.15*P('phv'),shards=()=>Math.floor(2.25*Math.pow(Math.max(0,S.ab-40),1.5)*SHM()),runShards=L=>L>40?Math.max(1,Math.floor(.6*Math.pow(L-40,1.5)*SHM())):0,maxSF=()=>1+10*P('pst'),isGS=c=>!!(S.st.gs&&S.st.gs[c||S.cls]),abyssOn=()=>isGS()&&S.st.mode&&S.st.mode[S.cls]=='abyss',ABEST=()=>(S.st.abest||{})[S.cls]||0,SFMAX=()=>abyssOn()?Math.min(maxSF(),Math.max(1,Math.floor((ABEST()-1)/10)*10+1)):maxSF(),CUR=k=>!!(R&&R.cu&&R.cu.includes(k));
+const pcost=(p,l)=>Math.ceil(p[3]*Math.pow(p[4],l)),SHM=()=>(1+.15*P('phv'))*(typeof soulMul=='function'?soulMul():1),shards=()=>Math.floor(2.25*Math.pow(Math.max(0,S.ab-40),1.5)*SHM()),runShards=L=>L>40?Math.max(1,Math.floor(.6*Math.pow(L-40,1.5)*SHM())):0,maxSF=()=>1+10*P('pst'),isGS=c=>!!(S.st.gs&&S.st.gs[c||S.cls]),abyssOn=()=>isGS()&&S.st.mode&&S.st.mode[S.cls]=='abyss',ABEST=()=>(S.st.abest||{})[S.cls]||0,SFMAX=()=>abyssOn()?Math.min(maxSF(),Math.max(1,Math.floor((ABEST()-1)/10)*10+1)):maxSF(),CUR=k=>!!(R&&R.cu&&R.cu.includes(k));
 const fmt=n=>n<1e4?Math.round(n):n<1e6?(n/1e3).toFixed(1)+'k':n<1e9?(n/1e6).toFixed(1)+'M':n.toExponential(1);
 const TAG={warrior:'Heavy claw · one crushing blow per axe',rogue:'Twin claws · three quick strikes per dagger',mage:'Magnet orb · two spells per orb'};
 let TAB='up',DTAB='items';
@@ -358,7 +358,7 @@ const RL={vol:['magma','Volatile Rocks','Rocks turn to magma. Each one you grab 
 const CURSES={regen:['Festering','Enemies regenerate 4% health every turn.'],lean:['Lean Stock','Restocks bring 3 fewer weapons.'],rubble:['Cave-in','Restocks bury the machine in 4 extra junk.'],venom:['Lingering Venom','Poison on you lasts 2 turns longer.'],horde:['The Horde','One more enemy on every floor.'],fury:['Fury','Enemies deal 15% more damage.'],hide:['Thick Hide','Enemies have 20% more health.'],haste:['Restless','Bosses and mini-bosses use their tricks more often.']};
 const ABM=[[25,'Abyss Walker',150],[50,'Deepborn',300],[75,'Hollow Saint',600]];
 const amil=c=>((S.st.amil||{})[c||S.cls])||0,atitle=c=>{let t='';for(const[f,n]of ABM)if(amil(c)>=f)t=n;return t};
-function abyssMile(L){const T=S.st;T.amil=T.amil||{};for(const[f,n,b]of ABM)if(L>=f&&amil()<f){T.amil[S.cls]=f;S.sh+=b;banner('ABYSS · '+n.toUpperCase(),`Floor ${f} reached in the Abyss. +${b} Soul Shards, ready to spend now.`,1);save()}}
+function abyssMile(L){const T=S.st;T.amil=T.amil||{};for(const[f,n,b]of ABM)if(L>=f&&amil()<f){T.amil[S.cls]=f;b*=soulMul();S.sh+=b;banner('ABYSS · '+n.toUpperCase(),`Floor ${f} reached in the Abyss. +${b} Soul Shards, ready to spend now.`,1);save()}}
 function curseNow(k){R.cu.push(k);banner('CURSE · '+CURSES[k][0].toUpperCase(),CURSES[k][1],1)}
 function offerCurse(hd,sub){const pool=Object.keys(CURSES).filter(k=>!R.cu.includes(k)),ch=[];if(!pool.length)return false;while(ch.length<2&&pool.length)ch.push(pool.splice(Math.random()*pool.length|0,1)[0]);if(ch.length<2){curseNow(ch[0]);return false}
 R.pc=1;R.state='relic';sfx('clank');$d('#ov').innerHTML=`<h2>${hd||'The Abyss takes its due'}</h2><div>${sub||'Choose the curse you will carry for the rest of this run'}</div>`+ch.map(k=>`<button class="rel crel" onclick="takeCurse('${k}')">${IC('skull','rli')}<div><b>${CURSES[k][0]}</b> <small class="cur">CURSE</small><br><small>${CURSES[k][1]}</small></div></button>`).join('');$d('#ov').hidden=false;return true}
@@ -539,8 +539,8 @@ function endRun(won,left){if(R.state!='play'&&R.state!='relic')return;R.paused=0
 {const rs=Math.round(runShards(won?100:R.L)*(R.abyss?1.5:1));R.rs=rs;S.psh=(S.psh||0)+rs}if(R.abyss){S.st.abest=S.st.abest||{};S.st.abest[S.cls]=Math.max(S.st.abest[S.cls]||0,won?100:R.L)}else{S.best=Math.max(S.best,won?100:R.L);S.ab=Math.max(S.ab,won?100:R.L);S.cb=Math.max(S.cb||0,won?100:R.L)}save();
 const k=R.lastHit;R.cause=won||left?'':k?(k.name||'Grunt'):R.poisonKill?'Poison':'the dungeon';
 {const T=S.st,cs=R.cause||'';T.runs++;if(won)T.wins++;T.kills+=R.kills||0;T.bosses+=R.bk||0;T.gold+=Math.round(R.gain);T.time+=R.time||0;T.hit=Math.max(T.hit,R.maxHit||0);T.cr[S.cls]=(T.cr[S.cls]||0)+1;if(!won&&!left)T.killers[cs]=(T.killers[cs]||0)+1;T.hist.unshift({c:S.cls,f:R.L,k:won?'Victory':left?'Left early':cs,g:Math.round(R.gain),w:won?1:0});T.hist.length=Math.min(T.hist.length,10);save()}
-if(won&&R.abyss){const T=S.st;T.ags=T.ags||{};if(!T.ags[S.cls]){T.ags[S.cls]={t:Date.now(),runs:T.cr[S.cls]||T.runs,time:Math.round(R.time||0)};S.sh+=1500;R.bounty=1500}save()}
-else if(won){const T=S.st;T.vd=1;T.gs=T.gs||{};if(!T.gs[S.cls]){T.gs[S.cls]={t:Date.now(),runs:T.cr[S.cls]||T.runs,time:Math.round(R.time||0)};S.sh+=750;R.bounty=750}save()}
+if(won&&R.abyss){const T=S.st;T.ags=T.ags||{};if(!T.ags[S.cls]){T.ags[S.cls]={t:Date.now(),runs:T.cr[S.cls]||T.runs,time:Math.round(R.time||0)};S.sh+=1500*soulMul();R.bounty=1500*soulMul()}save()}
+else if(won){const T=S.st;T.vd=1;T.gs=T.gs||{};if(!T.gs[S.cls]){T.gs[S.cls]={t:Date.now(),runs:T.cr[S.cls]||T.runs,time:Math.round(R.time||0)};S.sh+=750*soulMul();R.bounty=750*soulMul()}save()}
 {const T=S.st;if(won){ach('god');if(R.abyss)ach('abyssal');if(Object.keys(T.gs||{}).length>=3)ach('god3')}if((T.gold||0)>=1e6)ach('rich');if((T.runs||0)>=100)ach('runs');achTick()}
 if(!won&&!left)hap('death');musicStop();wind(false);if(left){R.state='dead';R.dt=null;R.shown=1;R.left=1;summary();return}if(won){sfx('win')}else{sfx('die');shake=.7;K.snap=1;K.vy=0;K.ph='dead'}}
 function die(){endRun(false)}
@@ -2345,13 +2345,13 @@ function leaveTitle(){if(!TFADE){TFADE=.001;ensureAudio();sfx('clank')}}
 // ---------- store & ads ----------
 // Android build: replace these with your real AdMob rewarded unit and Play Console product IDs.
 // The rewarded ID below is Google's official TEST unit, safe to use while developing.
-const CFG={rewarded:'ca-app-pub-3940256099942544/5224354917',prod:{gold2x:'gold_2x',speed2x:'speed_2x',noads:'no_ads'}};
+const CFG={rewarded:'ca-app-pub-3940256099942544/5224354917',prod:{gold2x:'gold_2x',speed2x:'speed_2x',noads:'no_ads',soul2x:'soul_2x'}};
 // list prices (set the real ones in Play Console; these only show until Google Play reports its own)
-const LIST={gold2x:'$9.99',speed2x:'$5.99',noads:'$9.99'};;
-const IAP={gold2x:['pouch','Golden Claw','Double gold from every coin and chest, for every class, forever.'],speed2x:['storm','Swift Hand','Unlocks 2x combat speed: attacks, enemy turns and the claw all play twice as fast. Switch it on or off any time.'],noads:['check','Ad-Free','Never watch an ad: doubling a run\'s gold and rising again once per run are yours for free.']};
+const LIST={gold2x:'$9.99',speed2x:'$5.99',noads:'$9.99',soul2x:'$9.99'};;
+const IAP={gold2x:['pouch','Golden Claw','Double gold from every coin and chest, for every class, forever.'],soul2x:['shard','Soul Chalice','Double Soul Shards from every source (runs, crystals, Descend and bounties), for every class, forever.'],speed2x:['storm','Swift Hand','Unlocks 2x combat speed: attacks, enemy turns and the claw all play twice as fast. Switch it on or off any time.'],noads:['check','Ad-Free','Never watch an ad: doubling a run\'s gold and rising again once per run are yours for free.']};
 const NAT=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
 S.own=S.own||{};
-const TEST=()=>!NAT&&!!S.mtest,adsOn=()=>NAT||TEST(),owns=k=>!!S.own[k]&&(NAT||TEST()),fastOn=()=>owns('speed2x')&&S.fast!==false,goldMul=()=>owns('gold2x')?2:1;
+const TEST=()=>!NAT&&!!S.mtest,adsOn=()=>NAT||TEST(),owns=k=>!!S.own[k]&&(NAT||TEST()),fastOn=()=>owns('speed2x')&&S.fast!==false,goldMul=()=>owns('gold2x')?2:1,soulMul=()=>owns('soul2x')?2:1;
 const MON={price:{},adReady:!NAT,busy:0};
 function toggleTest(){S.mtest=!S.mtest;save();menu()}
 function toggleFast(){S.fast=!fastOn();save();menu()}
@@ -2379,7 +2379,7 @@ function initStore(){if(!window.CdvPurchase)return;const{store:st,ProductType:T,
 if(NAT){initAds();document.addEventListener('deviceready',initStore,false)}
 function shopPane(){return skinPane()+shopPane0()}
 function shopPane0(){const b=k=>{const[e,n,d]=IAP[k],o=owns(k);return`<div class="r"><div><b>${IC(e)}${n}</b>${o?' ✓':''}<br><small>${d}</small></div>${o?(k=='speed2x'?`<button onclick="toggleFast()">${fastOn()?'2x on':'2x off'}</button>`:'<small>Owned</small>'):(NAT?`<button onclick="buy('${k}')">${MON.price[k]||LIST[k]}</button>`:TEST()?`<button onclick="buy('${k}')">Test ${LIST[k]}</button>`:'<small style="white-space:nowrap">In the app</small>')}</div>`};
- return `<h3>One-time unlocks</h3>${b('speed2x')}${b('gold2x')}${b('noads')}
+ return `<h3>One-time unlocks</h3>${b('speed2x')}${b('gold2x')}${b('soul2x')}${b('noads')}
 <h3>${owns('noads')?'Ad-Free':'Free with ads'}</h3><div class="r"><div><small>${owns('noads')?'No ads, ever. After any run you can <b style="color:#e7d6b4">double that run\'s gold</b>, and once per run you can <b style="color:#e7d6b4">rise again</b> at 50% HP when you fall, all free.':'Ads are always optional. After a run you can watch one to <b style="color:#e7d6b4">double that run\'s gold</b>, and once per run you can watch one to <b style="color:#e7d6b4">rise again</b> at 50% HP when you fall.'}</small></div></div>
 ${NAT||TEST()?`<button style="width:100%;margin-top:8px" onclick="restore()">${NAT?'Restore purchases':'Reset test purchases'}</button>`:'<small style="display:block;margin-top:8px;color:#a3978a">Unlocks and ads come with the Google Play version of Hundred Deep. Your progress here is not affected.</small>'}
 ${NAT?'':`<button style="width:100%;margin-top:14px;font-size:12px;opacity:.6" onclick="toggleTest()">Developer test mode · ${TEST()?'on':'off'}</button>${TEST()?'<small style="display:block;margin-top:6px;color:#8a7d6b">Test mode: purchases and ads are simulated on this device. Real payments only happen in the Android app.</small>':''}`}`}
