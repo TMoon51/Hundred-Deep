@@ -666,7 +666,7 @@ else if(k=='r'&&(vol||(stats().rb&&o.t=='🪨'))){if(stats().rb)R.hq.push('r');i
 else{s='junk';c='#999'}
 K.sum.push([s,k=='c'||k=='x'?o.val*(1+.25*P('pg'))*(hasR('mag')?RV('mag'):1)*(hasR('btt')?(AW('btt')?2.2:2):1)*goldMul():0])}
 function clawUpd(dt){phys(dt);const k=K,sp=spdm(),lo=26,hi=W-26;
-if(k.ph=='aim')k.dg=0;else if(k.ph=='down'&&R.drag&&!k.dg){k.dg=1;R.drag=0;k.x=Math.max(lo,Math.min(hi,k.x+(Math.random()<.5?-1:1)*(60+Math.random()*30)));sfx('clank');ft(k.x,HOME-24,'@chain Yanked!','#ffb02e')}
+if(k.ph=='aim')k.dg=0;else if(k.ph=='down'&&R.drag&&!k.dg){k.dg=1;const yk=typeof R.drag=='object'?R.drag:{d:Math.random()<.5?-1:1,a:75};R.drag=0;k.x=Math.max(lo,Math.min(hi,k.x+yk.d*yk.a));sfx('clank');ft(k.x,HOME-24,'@chain Yanked!','#ffb02e')}
 if(k.ph=='aim'){if(k.touch){const d=k.tx-k.x,st=3200*dt;k.x+=Math.abs(d)<st?d:Math.sign(d)*st}k.x=Math.max(lo,Math.min(hi,k.x));}
 else if(k.ph=='down'&&HOOK()){k.y+=300*sp*dt;let end=k.y>=DOWN;if(end)k.y=DOWN;const ty=k.y+HT;let n=k.items.filter(o=>o.h&&!o.barb).length;
  const HN=hasR('hcl')?5:3;for(const o of k.items){if(n>=HN)break;if(o.h||o.web||Math.hypot(o.x-k.x,o.y-ty)>o.r+2)continue;
@@ -777,7 +777,7 @@ else if(k=='grasp'){const w=K.items.filter(o=>!o.h&&isWpn(o)).sort(()=>Math.rand
 else if(k=='hymn'){const h=e.max*.05;e.hp=Math.min(e.max,e.hp+h);summon(e,['grunt','zealot']);ft(e.x,e.y-e.sz/2-30,'@heal Hymn of the Deep · '+fmt(h),'#c9a050',14,1.3);R.et=.9}
 else if(k=='gaze'){const s=stats();EFX.push({k:'gaze',x:e.x,y:84,t:0,d:.7});if(Math.random()<s.dod){sfx('whiff');ft(W/2,170,'Dodged her gaze!','#7fe')}else{const d=e.dm*2.2*(1-s.red);shake=.45;R.lastHit=e;R.poisonKill=0;if(hurt(d,'@burst The eye burns -',W/2))return}R.et=.9}
 else if(k=='penance'){e.hp=Math.max(1,e.hp-e.max*.08);e.dm*=1.25;e.fl=.15;sfx('hurt');ft(e.x,e.y-e.sz/2-30,'Scourges itself · hits harder','#ff7a4a');R.eq.unshift({e,k:'hit'});R.et=.4}
-else if(k=='drag'){R.drag=1;sfx('clank');ft(e.x,e.y-e.sz/2-30,'@chain Its chains snag your claw','#ffb02e');R.et=.6}
+else if(k=='drag'){R.drag={d:Math.random()<.5?-1:1,a:60+Math.random()*30};sfx('clank');ft(e.x,e.y-e.sz/2-30,'@chain Its chains snag your claw · see the yank line','#ffb02e');R.et=.6}
 else if(k=='eggs'){for(let j=0;j<3;j++){add('r','🥚',13,0);K.items[K.items.length-1].egg=2}sfx('bubble');ft(e.x,e.y-e.sz/2-30,'Lays eggs in the machine','#c8ccd4');R.et=.6}
 else if(k=='gnaw'){const cs=K.items.filter(o=>o.k=='c'&&!o.h);for(const o of cs)K.items.splice(K.items.indexOf(o),1);const h=e.max*.04*cs.length;e.hp=Math.min(e.max,e.hp+h);sfx('steal');ft(e.x,e.y-e.sz/2-30,cs.length?'Gnaws '+cs.length+' coins · +'+fmt(h):'Finds no coins to gnaw','#ffb02e');R.et=.6}
 else if(k=='rot'){const ws=K.items.filter(o=>o.k=='a'&&!o.h&&!o.web).sort(()=>Math.random()-.5).slice(0,3);for(const o of ws){o.k='r';o.t='🦴';o.val=0}sfx('bubble');ft(e.x,e.y-e.sz/2-30,'@pois Rots '+ws.length+' weapons to bone','#8fae6a');R.et=.6}
@@ -2330,6 +2330,9 @@ else{const z2=z*(k.small?.75:1),rr=MR()*z2*(.6+.4*k.open);cable(x,252,K.snap?Mat
 if(GW()){g.strokeStyle='rgba(120,255,170,.18)';g.lineWidth=2;g.setLineDash([3,8]);g.beginPath();g.arc(x,y+24*z,45*z*GR,0,7);g.stroke();g.setLineDash([])}
 orb(x,y+14*z,12*z2,T,k.open)}
 g.drawImage(mG,0,CH);drawPX('m');
+if(R&&R.drag&&typeof R.drag=='object'&&k.ph=='aim'){const tx=Math.max(26,Math.min(W-26,k.x+R.drag.d*R.drag.a)),ar=y=>{g.beginPath();g.moveTo(tx,y);g.lineTo(tx-R.drag.d*7,y-5);g.lineTo(tx-R.drag.d*7,y+5);g.closePath();g.fill()};
+ g.save();g.strokeStyle='rgba(255,176,46,.75)';g.fillStyle='rgba(255,176,46,.85)';g.lineWidth=2;g.setLineDash([6,5]);g.beginPath();g.moveTo(tx,HOME+40);g.lineTo(tx,FL-10);g.stroke();g.setLineDash([]);
+ g.beginPath();g.moveTo(k.x,HOME+18);g.lineTo(tx,HOME+18);g.stroke();ar(HOME+18);g.font='bold 11px system-ui';g.textAlign='center';g.fillText('YANK',(k.x+tx)/2,HOME+10);g.restore()}
 if(R.turns==0&&k.ph=='aim'){g.fillStyle='#fffc';g.font='bold 13px system-ui';g.textAlign='center';g.fillStyle='rgba(10,8,6,.7)';g.fillRect(24,HOME+66-13,W-48,26);g.fillStyle='#e9e1d3';g.fillText('Drag to aim · release to drop · grab weapons',W/2,HOME+66)}}
 function draw(){g.setTransform(RS,0,0,RS,0,0);g.fillStyle='#0b0908';g.fillRect(0,0,W,SH);drawFight();
  g.save();if(MS<1){const gr=g.createLinearGradient(0,FH,0,SH);gr.addColorStop(0,'#16110d');gr.addColorStop(1,'#080605');g.fillStyle=gr;g.fillRect(0,FH,W,SH-FH)}g.translate(MX,FH);g.scale(MS,MS);g.translate(0,-CH);drawClaw();g.restore();
