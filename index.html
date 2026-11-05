@@ -389,13 +389,13 @@ const AWD={vol:'Explosions also poison every enemy.',mag:'Every coin you grab ad
  ech:'An echo can echo again.',hrt:'Once per run, survive a killing blow and rise with 30% HP.',gem:'Flame gems give +8% damage and heart gems heal 35%.',thn:'Thorns also poison the attacker.',fst:'Your first hit each turn always crits.',frz:'Frozen enemies take +50% damage from your hits.',
  hov:'The curse is lifted: no HP loss, and +60% damage.',gcr:'Crits deal x3.3.',hcl:'Junk stops hurting and feeds you 1% HP instead.',abl:'Bosses get no extra health.',btt:'Heals are no longer halved, and gold is x2.2.'};
 const spdm=()=>R.spd*1.35*(S.cls=='rogue'?1.3:1);
-function stats(){const c=S.cls,u=U(c),k=u.sk,b=CL[c];let dm=10*b.dm*Math.pow(1.15,u.dmg)*R.atk,crit=0,red=0,dod=0,kh=0,hh=0,fr=0,rb=0,ex=0,ls=0,pp=0,rip=0,pl=0,ch=0,sh=0,gw=0,rg=0,gs=0,br=0,mk=0,fn=0,cb=0,sw=0,mn=0,el=0,rc=0;
+function stats(){const c=S.cls,u=U(c),k=u.sk,b=CL[c];let dm=10*b.dm*Math.pow(1.15,u.dmg)*R.atk*(1+(R.fg||0)),crit=0,red=0,dod=0,kh=0,hh=0,fr=0,rb=0,ex=0,ls=0,pp=0,rip=0,pl=0,ch=0,sh=0,gw=0,rg=0,gs=0,br=0,mk=0,fn=0,cb=0,sw=0,mn=0,el=0,rc=0;
 if(c=='warrior'){if(k>1)red=.25;if(k>2)kh=.05;if(k>3)rb=.25;if(k>4)ex=1;if(k>5)ls=1;if(k>6)rg=1;if(k>7)br=1;if(k>8)gs=1}
 if(c=='rogue'){if(k>0)crit=.3;if(k>1)dod=.25;if(k>3)pp=.03;if(k>4)rip=1;if(k>5)pl=1;if(k>6)fn=1;if(k>7){cb=1;dm*=1+.1*(R.combo||0)}if(k>8)sw=1}
 if(c=='mage'){if(k>0)fr=.2;if(k>1)red=.25;if(k>2)hh=.025;if(k>4)sh=.5;if(k>5)gw=1;if(k>6)mn=1;if(k>7)el=1;if(k>8)rc=1}
 dm*=1+.25*P('pdm');if(hasR('hov'))dm*=AW('hov')?1.6:1.5;if(hasR('bul'))red=1-(1-red)*RV('bul');red=1-(1-red)*Math.pow(.96,P('pdf'));if(hasR('luk'))crit+=RV('luk');if(AW('shp'))crit+=.1;crit+=.04*P('pcr');if(hasR('frz'))fr+=RV('frz');
 if(R&&R.sund>0)red=0;return{dm,crit,red,dod,kh,hh,fr,rb,ex,ls,pp,rip,pl,ch,sh,gw,rg,gs,br,mk,fn,cb,sw,mn,el,rc,max:100*Math.pow(1.15,u.hp)*(1+.25*P('php'))*(hasR('hrt')?RV('hrt'):1)*(hasR('gcr')?RV('gcr'):1)}}
-const RUNF=['fc','mgb','hrtU','ig','rv','abyss','cu','sg','L','hp','rel','atk','rage','mana','combo','ls','gain','kills','bk','time','turns','tn','maxHit','seen','rf','got'];
+const RUNF=['fg','fc','mgb','hrtU','ig','rv','abyss','cu','sg','L','hp','rel','atk','rage','mana','combo','ls','gain','kills','bk','time','turns','tn','maxHit','seen','rf','got'];
 function ckpt(){if(!R||R.state=='dying'||R.state=='dead'||R.state=='victory')return;const r={cls:S.cls};for(const k of RUNF)r[k]=R[k];S.run=JSON.parse(JSON.stringify(r));save()}
 function go(res){WFX=[];WA={k:'',t:0,d:0};R={pois:[],ban:[],bt:0,seen:{},skim:0,twd:null,rage:0,rageOn:0,brace:1,mark:null,combo:0,cg:[0,0],tn:0,mana:0,L:Math.min(S.sf||1,SFMAX()),rel:[],fb:1,rf:0,so:0,hp:1,atk:1,spd:1,gain:0,state:'play',sw:0,fl:0,hq:[],tk:false,rc:0,ph:'claw',ht:0,pz:0,eq:[],et:0,fresh:false,turns:0,en:[],q:[],vis:1,floorT:0,ls:0,pend:null,abyss:abyssOn(),cu:[],sg:0};R.hp=stats().max;if(res&&res.L)for(const k of RUNF)if(res[k]!=null)R[k]=JSON.parse(JSON.stringify(res[k]));
 K={items:[],x:S.cls=='rogue'?100:W/2,y:HOME,ph:'aim',t:0,open:1,touch:0,tx:W/2,side:0,px:[100,260,180],small:0};refill();for(let i=0;i<90;i++)phys(1/60);spawn();
@@ -657,7 +657,7 @@ else if(k=='ls'){R.hq.push('ls');s='Lightning!';c='#b4c6d2'}
 else if(k=='v'){R.hq.push('v');s='Venom!';c='#7fe05a'}
 else if(k=='c'||k=='x'){const v=o.val*(1+.25*P('pg'))*(hasR('mag')?RV('mag'):1)*(hasR('btt')?(AW('btt')?2.2:2):1)*goldMul();S.gold+=v;R.gain+=v;s='+'+fmt(v)+' @coin';if(hasR('vam'))heal(stats().max*RV('vam'));if(k=='x'&&AW('vam'))heal(stats().max*.25);if(AW('mag')&&(R.mgb||0)<30){R.mgb=(R.mgb||0)+1;R.atk*=1.01}save()}
 else if(k=='s'){S.psh=(S.psh||0)+o.val;R.sg=(R.sg||0)+o.val;s='+'+fmt(o.val)+' @shard sealed';c='#b0a2cc';save()}
-else if(k=='f'){const gb=AW('gem')?1.08:1.05;R.atk*=gb;s='+'+Math.round((gb-1)*100)+'% dmg';c='#ff8a3e'}
+else if(k=='f'){const gb=AW('gem')?.08:.05;R.fg=(R.fg||0)+gb;s='+'+Math.round(gb*100)+'% dmg (+'+Math.round(R.fg*100)+'%)';c='#ff8a3e'}
 else if(k=='h'){const hb=AW('gem')?.35:.25;heal(stats().max*hb);s='+'+Math.round(hb*100)+'% HP';c='#6f6'}
 else if(k=='i'){S.ich=(S.ich||0)+o.val;R.ig=(R.ig||0)+o.val;s='+'+o.val+' Ichor';c='#e0484e';save()}
 else if(k=='r'&&hasR('hcl')&&!(vol||(stats().rb&&o.t=='🪨'))){if(AW('hcl')){heal(stats().max*.01);s='Junk feeds you';c='#8fae6a'}else{const d=stats().max*RV('hcl');R.hp=Math.max(1,R.hp-d);s='Junk bites -'+fmt(d);c='#b0443a'}}
