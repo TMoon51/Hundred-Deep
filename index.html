@@ -473,7 +473,7 @@ const ELK=['hol','war','fre','blo'],ELN={hol:'Hollowed',war:'Warded',fre:'Frenzi
 const ADEP=()=>1+R.L/100,AHP=()=>Math.pow(1.12,Math.max(0,U(S.cls).dmg-15)),ADM=()=>Math.pow(1.12,Math.max(0,U(S.cls).hp-15));
 function LCX(){const Z=FZ(),lay=R.lay||LAY[R.vis]||[];let c=1;for(const a of lay){const d=Math.abs(a[0]-W/2);if(d<1)continue;c=Math.min(c,(176/Z-.6*90*a[2])/d)}return Math.max(.72,Math.min(1,c))}
 function mk(s,i){const L=R.L,t=s.t,a=(R.lay||LAY[R.vis])[i],sp=s.sp||(t=='n'?NT[s.k||'grunt']:{}),G=k=>sp[k];
-const hp=BASEHP*Math.pow(HPG,Math.min(L,60)-1)*Math.pow(1.14,Math.max(0,L-60))*HPM[t]*(G('hp')||1)*(R.abyss?1.6*ADEP()*AHP()*(CUR('hide')?1.2:1)*(t=='b'?1.6:t=='m'?1.4:1):1)*(hasR('abl')&&t!='n'?RV('abl'):1),dm=4*Math.pow(1.07,L-1)*DMM[t]*(G('dm')||1)*(R.abyss?1.9*ADEP()*ADM()*(CUR('fury')?1.15:1):1);
+const hp=BASEHP*Math.pow(HPG,Math.min(L,60)-1)*Math.pow(1.14,Math.max(0,L-60))*HPM[t]*(G('hp')||1)*(R.abyss?1.6*ADEP()*AHP()*(CUR('hide')?1.2:1)*(t=='b'?1+.015*L:t=='m'?1.1+(L-5)*.8/90:1):1)*(hasR('abl')&&t!='n'?RV('abl'):1),dm=4*Math.pow(1.07,L-1)*DMM[t]*(G('dm')||1)*(R.abyss?1.9*ADEP()*ADM()*(CUR('fury')?1.15:1):1);
 const em=s.em||G('em')||EM[(L+s.o)%EM.length];
 {const D=S.dex,was=JSON.stringify(D);if(t=='n')D.e[s.k||'grunt']=1;else if(t=='m')D.m[L]=1;else if(t=='b'){D.b[L]=1;if(G('aby')){D.ab=D.ab||{};D.ab[L]=1}}else D.g=1;if(JSON.stringify(D)!=was)save()}
 if(t!='n'&&t!='g'&&!R.seen['b'+L]){R.seen['b'+L]=1;banner((t=='m'?'MINI-BOSS · ':t=='g'?'':'BOSS · ')+sp.name,sp.hint,1)}
