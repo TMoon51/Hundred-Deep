@@ -395,7 +395,8 @@ if(c=='rogue'){if(k>0)crit=.3;if(k>1)dod=.25;if(k>3)pp=.03;if(k>4)rip=1;if(k>5)p
 if(c=='mage'){if(k>0)fr=.2;if(k>1)red=.25;if(k>2)hh=.025;if(k>4)sh=.5;if(k>5)gw=1;if(k>6)mn=1;if(k>7)el=1;if(k>8)rc=1}
 dm*=1+.25*P('pdm');if(hasR('hov'))dm*=AW('hov')?1.6:1.5;if(hasR('bul'))red=1-(1-red)*RV('bul');red=1-(1-red)*Math.pow(.96,P('pdf'));if(hasR('luk'))crit+=RV('luk');if(AW('shp'))crit+=.1;crit+=.04*P('pcr');if(hasR('frz'))fr+=RV('frz');
 if(R&&R.sund>0)red=0;return{dm,crit,red,dod,kh,hh,fr,rb,ex,ls,pp,rip,pl,ch,sh,gw,rg,gs,br,mk,fn,cb,sw,mn,el,rc,max:100*Math.pow(1.15,u.hp)*(1+.25*P('php'))*(hasR('hrt')?RV('hrt'):1)*(hasR('gcr')?RV('gcr'):1)*(1+(R&&R.hb||0))}}
-const RUNF=['hb','fg','fc','mgb','hrtU','ig','rv','abyss','cu','sg','L','hp','rel','atk','rage','mana','combo','ls','gain','kills','bk','time','turns','tn','maxHit','seen','rf','got'];
+const IMP=()=>R&&R.abyss?Math.pow(1.15,Math.max(0,(R.ft||0)-15)):1;
+const RUNF=['ft','hb','fg','fc','mgb','hrtU','ig','rv','abyss','cu','sg','L','hp','rel','atk','rage','mana','combo','ls','gain','kills','bk','time','turns','tn','maxHit','seen','rf','got'];
 function ckpt(){if(!R||R.state=='dying'||R.state=='dead'||R.state=='victory')return;const r={cls:S.cls};for(const k of RUNF)r[k]=R[k];S.run=JSON.parse(JSON.stringify(r));save()}
 function go(res){WFX=[];WA={k:'',t:0,d:0};R={pois:[],ban:[],bt:0,seen:{},skim:0,twd:null,rage:0,rageOn:0,brace:1,mark:null,combo:0,cg:[0,0],tn:0,mana:0,L:Math.min(S.sf||1,SFMAX()),rel:[],fb:1,rf:0,so:0,hp:1,atk:1,spd:1,gain:0,state:'play',sw:0,fl:0,hq:[],tk:false,rc:0,ph:'claw',ht:0,pz:0,eq:[],et:0,fresh:false,turns:0,en:[],q:[],vis:1,floorT:0,ls:0,pend:null,abyss:abyssOn(),cu:[],sg:0};R.hp=stats().max;if(res&&res.L)for(const k of RUNF)if(res[k]!=null)R[k]=JSON.parse(JSON.stringify(res[k]));
 K={items:[],x:S.cls=='rogue'?100:W/2,y:HOME,ph:'aim',t:0,open:1,touch:0,tx:W/2,side:0,px:[100,260,180],small:0};refill();for(let i=0;i<90;i++)phys(1/60);spawn();
@@ -489,7 +490,7 @@ const bs=L%10==0?(R.abyss&&ABOSS[L]?Object.assign({},BOSS[L],ABOSS[L]):BOSS[L]):
 if(god)sp.push({t:'g',o:1000,sp:GOD});
 else{if(big){sp.push({t:bt,o:1000,sp:big,em:big.em});nb=1;if(big.twin){sp.push({t:bt,o:1001,sp:big,em:big.em2});nb=2}}
 for(let i=0;i<n-nb;i++){const k=pickKind(L);for(let j=0;j<(k=='swarm'?3:k=='carrion'?2:1);j++)sp.push({t:'n',k,o:o++})}}
-R.vis=god?3:Math.min(5,sp.length);R.fb=1;R.brace=1;R.bkf=0;R.mark=null;R.twd=null;R.skim=0;const first=sp.splice(0,R.vis);R.q=sp;
+R.vis=god?3:Math.min(5,sp.length);R.fb=1;R.brace=1;R.bkf=0;R.ft=0;R.mark=null;R.twd=null;R.skim=0;const first=sp.splice(0,R.vis);R.q=sp;
 const bi=first.findIndex(s=>s.t!='n'),solo=bi>=0&&!first[bi].sp.twin;R.lay=solo?BLAY[R.vis]:null;if(solo){const c=BCEN[R.vis];[first[bi],first[c]]=[first[c],first[bi]]}
 else if(bi>=0){const tw=first.filter(x=>x.t!='n').slice(0,2),sl={2:[0,1],3:[0,2],4:[1,2],5:[1,3]}[R.vis]||[0,1];tw.forEach((o,n)=>{const x=first.indexOf(o),t=sl[n];[first[x],first[t]]=[first[t],first[x]]})}
 R.pend=null;R.en=[null,null,null,null,null];first.forEach((s,i)=>{if(s)R.en[i]=mk(s,i)});R.floorT=0;if(hasR('abl'))for(const e of R.en)if(e)e.fz=1;
@@ -728,7 +729,7 @@ function mergeGold(){let any=0;
 function startClaw(){mergeGold();if(K.ph!='aim')bed();if(K.items.filter(o=>o.k=='a'&&!o.h).length<RESTOCK)refill();K.ph='aim';R.ph='claw';K.touch=0}
 function beginTick(){const q=R.en.filter(e=>e&&e.st=='alive'&&e.ps>0);if(!q.length)return false;R.tq=q;R.ph='tk';R.et=.3;return true}
 function afterAttack(){if(!R.tk){R.tk=true;if(beginTick())return}beginEnemy()}
-function endTurn(){achTick();if(hasR('hov')&&R.state=='play'&&!AW('hov')){const d=stats().max*RV('hov');R.hp=Math.max(1,R.hp-d);ft(W/2,176,'@cheart -'+fmt(d),'#b0443a',12,1)}for(const e of R.en)if(e)e.fresh=0;R.fb=1;R.rc=0;R.tk=false;R.rageOn=0;R.tn++;K.small=0;if(S.cls=='rogue'){K.side=0;K.x=K.px[0]}startClaw()}
+function endTurn(){achTick();if(hasR('hov')&&R.state=='play'&&!AW('hov')){const d=stats().max*RV('hov');R.hp=Math.max(1,R.hp-d);ft(W/2,176,'@cheart -'+fmt(d),'#b0443a',12,1)}for(const e of R.en)if(e)e.fresh=0;R.fb=1;R.rc=0;R.tk=false;R.rageOn=0;R.tn++;R.ft=(R.ft||0)+1;if(R.abyss&&R.ft>15&&R.state=='play'){if(R.ft==16){banner('THE ABYSS GROWS IMPATIENT','You have lingered too long. Enemies hit 15% harder every turn until this floor is cleared.',1);shake=.4}ft(W/2,140,'@skull Impatient · enemies +'+Math.round((IMP()-1)*100)+'%','#ff6b6b',14,1.4)}K.small=0;if(S.cls=='rogue'){K.side=0;K.x=K.px[0]}startClaw()}
 function upd(dt){if(R&&R.paused)return;if(R&&R.state=='play')R.time=(R.time||0)+dt;if(R&&(R.state=='dying'||R.state=='victory'||(R.state=='dead'&&R.dt!=null))){endUpd(dt);return}if(!R||R.state!='play'){wind(false);return}wind(scr=='game');stepPX(dt);if(R.cine){cineUpd(dt);return}if(Math.random()<dt/7)sfx('drip');if(R.ban.length&&(R.bt+=dt)>2.6){R.ban.shift();R.bt=0}if(R.ent&&(R.ent.t+=dt)>2.4)R.ent=null;
 for(const e of R.en)if(e&&e.inv&&e.st=='alive'&&!R.en.some(x=>x&&x.st!='dying'&&x.ward===e)&&!R.q.some(q=>q.ward===e)){e.inv=0;ft(e.x,e.y-e.sz/2-30,'@skull Reforms!','#ff6b6b')}shake=Math.max(0,shake-dt);R.sw=Math.max(0,R.sw-dt*4);wupd(dt);
 clawUpd(dt);
@@ -788,7 +789,7 @@ else if(k=='sunder'){R.sund=2;sfx('slam');shake=.3;ft(W/2,160,'@burst Your guard
 else if(k=='skim'){R.skim=1;ft(e.x,e.y-e.sz/2-30,'Demands a tithe of your next grab','#ffb02e');R.et=.7}
 else{const s=stats(),sl=k=='slam';
 if(Math.random()<s.dod){sfx('whiff');ft(e.x,e.y,sl?'Dodged the SLAM!':'Dodge!','#7fe');if(s.rip)hitNow(e,1,'rip')}
-else{let d=e.dm*(sl?e.sm:1)*(1-s.red)*(e.k=='thief'?1+.25*Math.min(6,e.loot):1);if(sl&&s.br&&R.brace){R.brace=0;d*=.25;ft(W/2,160,'@shield Braced!','#ffd23e')}shake=sl?.5:.2;
+else{let d=e.dm*(sl?e.sm:1)*IMP()*(1-s.red)*(e.k=='thief'?1+.25*Math.min(6,e.loot):1);if(sl&&s.br&&R.brace){R.brace=0;d*=.25;ft(W/2,160,'@shield Braced!','#ffd23e')}shake=sl?.5:.2;
 if(e.lsteal){e.hp=Math.min(e.max,e.hp+d);ft(e.x,e.y-e.sz/2-30,'@blood +'+fmt(d),'#ff6b6b')}
 if(e.el=='blo'&&e.st=='alive'){const h=d*.5;e.hp=Math.min(e.max,e.hp+h);ft(e.x,e.y-e.sz/2-30,'@blood +'+fmt(h),'#ff6b6b')}
 if(hasR('thn')&&e.st=='alive'){e.hp-=d*RV('thn')*takeMul(e);if(AW('thn')){e.ps=(e.ps||0)+1;e.pt=3}e.fl=.15;afterDmg(e);if(e.hp<=0)kill(e)}
