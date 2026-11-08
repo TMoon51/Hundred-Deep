@@ -2438,8 +2438,8 @@ function titleEye(T,D){const c=(T+4)%11,o=c<1.6?0:c<3?(c-1.6)/1.4:c<8?1:c<9.2?1-
 const arch=()=>{g.beginPath();g.moveTo(D.cx-D.hw,D.by);g.lineTo(D.cx-D.hw,D.ay);g.arc(D.cx,D.ay,D.hw,Math.PI,0);g.lineTo(D.cx+D.hw,D.by);g.closePath()},k=D.hw/46;
 if(GP.ready==2){g.save();arch();g.clip();g.globalAlpha=.07*oe;g.filter='brightness(.5)';const u=1.6*k,m=GM;g.drawImage(GP.halo,D.cx-m.eye[0]*u,D.ey-m.eye[1]*u,m.w*u,m.h*u);g.filter='none';g.restore()}
 const ey=D.ey,lk=[Math.sin(T*.4)*.8,Math.sin(T*.27)*.4];
-g.save();g.globalAlpha=oe;let rg=g.createRadialGradient(D.cx,ey,1,D.cx,ey,40*k);rg.addColorStop(0,'rgba(140,34,18,.35)');rg.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=rg;g.fillRect(D.cx-40*k,ey-40*k,80*k,80*k);g.restore();
-g.save();g.translate(D.cx,ey);g.scale(k,k*Math.max(.05,oe));godEyeLive(0,0,1,T,1,lk,Math.min(1,oe*1.4),.0);g.restore()}
+g.save();g.globalAlpha=oe;let rg=g.createRadialGradient(D.cx,ey,1,D.cx,ey,70*k);rg.addColorStop(0,'rgba(140,34,18,.35)');rg.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=rg;g.fillRect(D.cx-70*k,ey-70*k,140*k,140*k);g.restore();
+g.save();g.translate(D.cx,ey);g.scale(k*2.1,k*2.1*Math.max(.05,oe));godEyeLive(0,0,1,T,1,lk,Math.min(1,oe*1.4)*.85,.0);g.restore()}
 
 function drawTitle(dt){TT+=dt;const D=titleGeo();g.fillStyle='#050403';g.fillRect(0,0,W,SH);
 if(TIMG.complete&&TIMG.naturalWidth){g.drawImage(TIMG,D.ox,D.oy,D.dw,D.dh);if(D.dh<SH){g.drawImage(TIMG,0,1040,720,40,D.ox,D.dh-2,D.dw,SH-D.dh+2);const eg=g.createLinearGradient(0,D.dh-60,0,SH);eg.addColorStop(0,'rgba(5,4,3,0)');eg.addColorStop(1,'rgba(5,4,3,.85)');g.fillStyle=eg;g.fillRect(0,D.dh-60,W,SH-D.dh+60)}}else g.drawImage(bgFor(1),0,0,W,SH);
