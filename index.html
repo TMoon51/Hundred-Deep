@@ -405,7 +405,7 @@ scr='game';$d('#menu').hidden=true;$d('#game').hidden=false;$d('#ov').hidden=tru
 function nextSkip(){while(R.skq&&R.skq.length){const f=R.skq.shift(),n=Math.floor((R.L-1)/10);if(f==='st'){if(offerRelic('The Abyss offers a gift','Choose a relic to carry down with you',1))return true;continue}if(f<0){if(offerCurse(`Floor ${-f} curse`,'You skipped this boss, so you carry its curse too'))return true;continue}return offerRelic(`Floor ${f} relic`,`Head Start: pick ${n-R.skq.filter(x=>x>0).length} of ${n} for the bosses you skipped`)}return false}
 const EM=['👹','🐺','🦹','zealot','gargoyle'],GN={'👹':'Ogre','🐺':'Hound','🦹':'Cutthroat',zealot:'Zealot',gargoyle:'Gargoyle'};
 // with a single boss or mini-boss on the floor, it stands dead center and the rest gather around it
-const BLAY={1:[[180,112,1]],2:[[180,88,.85],[302,150,.6]],3:[[62,142,.66],[180,86,.75],[298,142,.66]],4:[[50,150,.58],[180,86,.72],[310,150,.58],[112,104,.46]],5:[[48,152,.56],[110,104,.46],[180,86,.7],[250,104,.46],[312,152,.56]]},BCEN={1:0,2:0,3:1,4:1,5:2};
+const BLAY={1:[[180,112,1]],2:[[180,88,.85],[310,160,.6]],3:[[52,158,.62],[180,86,.75],[308,158,.62]],4:[[40,168,.54],[180,86,.72],[320,168,.54],[96,150,.46]],5:[[38,170,.52],[96,150,.46],[180,86,.7],[264,150,.46],[322,170,.52]]},TLAY={2:[[112,90,.78],[248,90,.78]],3:[[112,88,.74],[180,176,.5],[248,88,.74]],4:[[30,170,.5],[115,86,.72],[245,86,.72],[330,170,.5]],5:[[30,170,.5],[115,86,.72],[180,178,.48],[245,86,.72],[330,170,.5]]},BCEN={1:0,2:0,3:1,4:1,5:2};
 const LAY={1:[[180,118,1]],2:[[108,125,.85],[252,125,.85]],3:[[62,140,.7],[180,112,.75],[298,140,.7]],4:[[58,145,.68],[135,105,.6],[225,105,.6],[302,145,.68]],5:[[52,148,.62],[118,106,.55],[180,148,.68],[242,106,.55],[308,148,.62]]},CEN={1:0,2:0,3:1,4:1,5:2};
 const HPM={n:1,m:3.5,b:7,g:40},DMM={n:1,m:1.3,b:1.6,g:2.2},ATK={n:1,m:1,b:1,g:2},SZM={n:1,m:1.4,b:1.95,g:2.75},HPG=1.11;
 // normal enemy types: from = first floor they can appear
@@ -494,7 +494,7 @@ else{if(big){sp.push({t:bt,o:1000,sp:big,em:big.em});nb=1;if(big.twin){sp.push({
 for(let i=0;i<n-nb;i++){const k=pickKind(L);for(let j=0;j<(k=='swarm'?3:k=='carrion'?2:1);j++)sp.push({t:'n',k,o:o++})}}
 R.vis=god?3:Math.min(5,sp.length);R.fb=1;R.brace=1;R.bkf=0;R.ft=0;R.mark=null;R.twd=null;R.skim=0;const first=sp.splice(0,R.vis);R.q=sp;
 const bi=first.findIndex(s=>s.t!='n'),solo=bi>=0&&!first[bi].sp.twin;R.lay=solo?BLAY[R.vis]:null;if(solo){const c=BCEN[R.vis];[first[bi],first[c]]=[first[c],first[bi]]}
-else if(bi>=0){const tw=first.filter(x=>x.t!='n').slice(0,2),sl={2:[0,1],3:[0,2],4:[1,2],5:[1,3]}[R.vis]||[0,1];tw.forEach((o,n)=>{const x=first.indexOf(o),t=sl[n];[first[x],first[t]]=[first[t],first[x]]})}
+else if(bi>=0){R.lay=TLAY[R.vis]||null;const tw=first.filter(x=>x.t!='n').slice(0,2),sl={2:[0,1],3:[0,2],4:[1,2],5:[1,3]}[R.vis]||[0,1];tw.forEach((o,n)=>{const x=first.indexOf(o),t=sl[n];[first[x],first[t]]=[first[t],first[x]]})}
 R.pend=null;R.en=[null,null,null,null,null];first.forEach((s,i)=>{if(s)R.en[i]=mk(s,i)});R.floorT=0;if(hasR('abl'))for(const e of R.en)if(e)e.fz=1;
 if(god){const v=R.en.find(e=>e&&e.t=='g');if(v){v.st='alive';v.age=1}R.cine={k:'in',t:0,d:5.6,f:{}};musicStop()}
  else if(big){R.ent={n:big.name,k:bt,t:0};shake=Math.max(shake,.4);sfx('gong');sfx('slam');hap('heavy')}}
