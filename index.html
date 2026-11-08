@@ -405,9 +405,9 @@ scr='game';$d('#menu').hidden=true;$d('#game').hidden=false;$d('#ov').hidden=tru
 function nextSkip(){while(R.skq&&R.skq.length){const f=R.skq.shift(),n=Math.floor((R.L-1)/10);if(f==='st'){if(offerRelic('The Abyss offers a gift','Choose a relic to carry down with you',1))return true;continue}if(f<0){if(offerCurse(`Floor ${-f} curse`,'You skipped this boss, so you carry its curse too'))return true;continue}return offerRelic(`Floor ${f} relic`,`Head Start: pick ${n-R.skq.filter(x=>x>0).length} of ${n} for the bosses you skipped`)}return false}
 const EM=['👹','🐺','🦹','zealot','gargoyle'],GN={'👹':'Ogre','🐺':'Hound','🦹':'Cutthroat',zealot:'Zealot',gargoyle:'Gargoyle'};
 // with a single boss or mini-boss on the floor, it stands dead center and the rest gather around it
-const BLAY={1:[[180,118,1]],2:[[180,114,.85],[302,150,.6]],3:[[62,142,.66],[180,112,.75],[298,142,.66]],4:[[50,150,.58],[180,112,.72],[310,150,.58],[112,100,.46]],5:[[48,152,.56],[112,100,.46],[180,114,.7],[248,100,.46],[312,152,.56]]},BCEN={1:0,2:0,3:1,4:1,5:2};
+const BLAY={1:[[180,112,1]],2:[[180,88,.85],[302,150,.6]],3:[[62,142,.66],[180,86,.75],[298,142,.66]],4:[[50,150,.58],[180,86,.72],[310,150,.58],[112,104,.46]],5:[[48,152,.56],[110,104,.46],[180,86,.7],[250,104,.46],[312,152,.56]]},BCEN={1:0,2:0,3:1,4:1,5:2};
 const LAY={1:[[180,118,1]],2:[[108,125,.85],[252,125,.85]],3:[[62,140,.7],[180,112,.75],[298,140,.7]],4:[[58,145,.68],[135,105,.6],[225,105,.6],[302,145,.68]],5:[[52,148,.62],[118,106,.55],[180,148,.68],[242,106,.55],[308,148,.62]]},CEN={1:0,2:0,3:1,4:1,5:2};
-const HPM={n:1,m:3.5,b:7,g:40},DMM={n:1,m:1.3,b:1.6,g:2.2},ATK={n:1,m:1,b:1,g:2},SZM={n:1,m:1.2,b:1.5,g:2.75},HPG=1.11;
+const HPM={n:1,m:3.5,b:7,g:40},DMM={n:1,m:1.3,b:1.6,g:2.2},ATK={n:1,m:1,b:1,g:2},SZM={n:1,m:1.4,b:1.95,g:2.75},HPG=1.11;
 // normal enemy types: from = first floor they can appear
 const NT={grunt:{name:'Grunt'},
 brute:{from:3,em:'🧌',name:'Brute',hint:'Winds up @warn then hits for double',hp:1.6,dm:1.2,mv:['charge'],ev:2,sm:2},
