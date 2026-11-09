@@ -2289,7 +2289,7 @@ if(c=='warrior'){const st=stats(),rage=st.rg&&(R.rage>=100||R.rageOn);let x=W-50
  else if(k=='slam'){if(p<.35){const q=ez(p/.35);y=CH+24-58+56*q;x=W-64-30*q;r=.1-1.05*q}else{const q=ez((p-.35)/.65);y=CH+22+2*q;x=W-94+44*q;r=-.95+.63*q}}
  else if(k=='exeup'){const q=ez(Math.min(1,p/.55));y-=26*q;r=-.32+.5*q+.02*Math.sin(T*30)*(p>.55)}
  wdraw('axe',x,y,r,.58,1,img)}
-else if(c=='rogue'){const dark=shadowTurn(),img=dark?wvar('dagger','dark'):null;
+else if(c=='rogue'){const dark=shadowTurn(),img=null;
  for(const i of[0,1]){const s=i?-1:1,h=WT.h[i];let x=i?W-40:40,y=CH+12,r=s*.38;
   x+=s*14*h;y-=30*h;r+=s*.25*h;
   if(k=='cross'){const q=bell(p);x+=s*78*q;y-=14*q;r+=s*.85*q}
