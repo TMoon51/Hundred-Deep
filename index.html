@@ -472,7 +472,7 @@ const banner=(t,h,top)=>(sfx(top?'gong':'chime'),top)?R.ban.splice(R.bt>0?1:0,0,
 const ELK=['hol','war','fre','blo'],ELN={hol:'Hollowed',war:'Warded',fre:'Frenzied',blo:'Bloodthirsty'},ELC={hol:'#c8ccd4',war:'#9fb8d8',fre:'#ff7a4a',blo:'#e05a5a'},
  ELD={hol:'Splits into two shades when it dies',war:'Takes half damage until below 60% health',fre:'Attacks twice once below half health',blo:'Heals for half the damage it deals'};
 // Abyss scaling: deeper floors (up to 2x by floor 100), and Damage/Health levels past the base cap of 15
-const ADEP=()=>1+R.L/100,AHP=()=>Math.pow(1.05,Math.max(0,U(S.cls).dmg-15)),ADM=()=>Math.pow(1.12,Math.max(0,U(S.cls).hp-15));
+const ADEP=()=>1+R.L/100,AHP=()=>Math.pow(1.05,Math.max(0,U(S.cls).dmg-15)),ADM=()=>Math.pow(1.05,Math.max(0,U(S.cls).hp-15));
 function LCX(){const Z=FZ(),lay=R.lay||LAY[R.vis]||[];let c=1;for(const a of lay){const d=Math.abs(a[0]-W/2);if(d<1)continue;c=Math.min(c,(176/Z-.6*90*a[2])/d)}return Math.max(.72,Math.min(1,c))}
 const EZ=L=>R&&!R.abyss&&L<=10?1-.15*(11-L)/10:1;
 function mk(s,i){const L=R.L,t=s.t,a=(R.lay||LAY[R.vis])[i],sp=s.sp||(t=='n'?NT[s.k||'grunt']:{}),G=k=>sp[k];
