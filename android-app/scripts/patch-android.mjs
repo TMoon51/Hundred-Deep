@@ -14,6 +14,10 @@ edit('android/app/src/main/AndroidManifest.xml', s => {
   s = s.replace(/\s*<meta-data android:name="com\.google\.android\.gms\.ads\.APPLICATION_ID"[^>]*\/>/, '');
   s = s.replace(/<application([^>]*)>/, `<application$1>\n        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="${appId}"/>`);
   if (!/screenOrientation/.test(s)) s = s.replace(/<activity\b/, '<activity\n            android:screenOrientation="portrait"');
+  // The portrait lock makes Play assume a portrait screen is required, which hides the app from tablets,
+  // Chromebooks, Play Games on PC and XR. Mark the screen features optional so every device can install it.
+  if (!/android\.hardware\.screen\.portrait/.test(s)) s = s.replace(/<application\b/,
+    '<uses-feature android:name="android.hardware.screen.portrait" android:required="false"/>\n    <uses-feature android:name="android.hardware.screen.landscape" android:required="false"/>\n\n    <application');
   return s;
 });
 
