@@ -154,7 +154,7 @@ return h}
 const BK={},RD={};
 function endBk(btn){const c=bkCode();S.bkr=S.st.runs;save();try{navigator.clipboard.writeText(c).then(()=>{btn.textContent='Copied. Keep it somewhere safe'},()=>{btn.outerHTML=`<textarea readonly style="width:100%;height:54px;font-size:10px">${c}</textarea>`})}catch(e){btn.outerHTML=`<textarea readonly style="width:100%;height:54px;font-size:10px">${c}</textarea>`}}
 // gift codes: each save can redeem each code once; gold goes to the class selected at the time
-const CODES={RISEAGAIN:{gold:10000,note:'Sorry about your lost progress.'},DEEPGOLD:{gold:20000,sh:500,note:'A gift from the deep.'}};
+const CODES={RISEAGAIN:{gold:10000,note:'Sorry about your lost progress.'},DEEPGOLD:{gold:20000,sh:500,note:'A gift from the deep.'},DEEPTEST:{gold:880000,sh:1000,note:'Thanks for testing Hundred Deep!'}};
 const giftTxt=c=>[c.gold?fmt(c.gold)+' gold':'',c.sh?fmt(c.sh)+' Soul Shards':''].filter(Boolean).join(' and ');
 function redeem(){const el=$d('#rdin'),k=(el&&el.value||'').trim().toUpperCase().replace(/\s+/g,'');RD.ok=0;RD.pick=null;
  const c=CODES[k];S.red=S.red||{};
